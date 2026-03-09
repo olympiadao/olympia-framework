@@ -246,49 +246,39 @@ contract OlympiaExecutor {
 
 ## Deployments
 
-### V1 (Current — to be superseded)
+Contract addresses will be updated with Mordor and mainnet addresses at deployment.
 
 | Network | Contract | Address | Status |
 |---------|----------|---------|--------|
-| Mordor | DGovernor (typo in name) | `0x10107eBC22d63150449c43A862Ed737E9BFee63B` | Deployed, needs rewrite |
-| Mordor | Timelock | `0x043E027251a743461d0fF70C5389A6f7Fb9e2c36` | Deployed, reuse with new roles |
-| Mordor | OlympiaMemberNFT | `0x628402C22e0AcFe24Df60EF1Dfb848376E1CdC4b` | Deployed, wrap in adapter |
-
-### V2 (Planned)
-
-| Network | Contract | Address | Status |
-|---------|----------|---------|--------|
-| Mordor | OlympiaGovernor | TBD | Pending rewrite |
+| Mordor | OlympiaGovernor | TBD | Pending deployment |
 | Mordor | NFTVotingModuleAdapter | TBD | Pending deployment |
 | Mordor | OlympiaExecutor | TBD | Pending deployment |
 | Mordor | SanctionsOracle | TBD | Pending deployment (ECIP-1119) |
+| Mordor | OlympiaMemberNFT | TBD | Pending deployment |
+| Mordor | Timelock | TBD | Pending deployment |
 
-## Gap Analysis: V1 vs Implementation
+## Gap Analysis
 
-| Spec Requirement | Deployed (V1) | Gap | Action |
-|-----------------|---------------|-----|--------|
-| IOlympiaVotingModule interface | GovernorVotes (IVotes) | Wrong interface | **Rewrite** — custom `_getVotes()` |
-| `votingPower()` + `isEligible()` | Standard delegation model | Missing | **New contract** — NFTVotingModuleAdapter |
-| Distinct Executor Module | Timelock is executor (OZ default) | Missing component | **New contract** — OlympiaExecutor |
-| `updateGovernanceParams()` via OIP | Hardcoded in constructor | No self-upgrade | **Rewrite** — add `onlyGovernance` setters |
-| `updateVotingModule()` via OIP | Fixed at deploy | No module migration | **Rewrite** — add `onlyGovernance` setter |
-| Sanctions check on `propose()` | Not implemented | Missing | **Rewrite** — add sanctions check |
-| `cancelIfSanctioned()` | Not implemented | Missing | **Rewrite** — add permissionless cancel |
-| Name: "OlympiaGovernor" | "DGorvernor" (typo) | Cosmetic | **Fix** |
-
-**Verdict:** Governor needs full rewrite and redeployment. Timelock can be reused with updated roles. OlympiaMemberNFT is kept and wrapped in adapter.
+| Spec Requirement | Status | Action |
+|-----------------|--------|--------|
+| IOlympiaVotingModule interface | Not built | Custom `_getVotes()` override |
+| `votingPower()` + `isEligible()` | Not built | NFTVotingModuleAdapter |
+| Distinct Executor Module | Not built | OlympiaExecutor |
+| `updateGovernanceParams()` via OIP | Not built | `onlyGovernance` setters |
+| `updateVotingModule()` via OIP | Not built | `onlyGovernance` setter |
+| Sanctions check on `propose()` | Not built | Sanctions integration (ECIP-1119) |
+| `cancelIfSanctioned()` | Not built | Permissionless cancel |
 
 ## Staged Governance Lifecycle
 
 ```
 Phase 1: Bootstrap (current)
-  Governor V1 deployed (prototype)
   Treasury accumulates basefee + donations
   No withdrawals — governance not yet connected to Treasury
 
 Phase 2: CoreDAO Activation (Stage 2)
-  Governor V2 deployed with IOlympiaVotingModule + sanctions
-  OlympiaExecutor deployed, granted WITHDRAWER_ROLE on Treasury V2
+  OlympiaGovernor deployed with IOlympiaVotingModule + sanctions
+  OlympiaExecutor deployed, granted WITHDRAWER_ROLE on Treasury
   Timelock configured: Governor=PROPOSER+CANCELLER, Executor=EXECUTOR
   Withdrawals enabled through Governor → Timelock → Executor pipeline
 
@@ -315,12 +305,12 @@ Phase 4: Governance Maturity
 
 ```
 1. Deploy SanctionsOracle (ECIP-1119)
-2. Deploy NFTVotingModuleAdapter (wrapping existing OlympiaMemberNFT at 0x628402...)
-3. Deploy OlympiaTimelock (or reconfigure existing at 0x043E02...)
-4. Deploy OlympiaExecutor (treasury V2 + timelock + sanctionsOracle)
+2. Deploy NFTVotingModuleAdapter (wrapping OlympiaMemberNFT)
+3. Deploy OlympiaTimelock
+4. Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
 5. Deploy OlympiaGovernor (votingModule + timelock + sanctionsOracle)
 6. Configure Timelock: Governor=PROPOSER+CANCELLER, Executor=EXECUTOR
-7. Grant WITHDRAWER_ROLE on Treasury V2 to OlympiaExecutor
+7. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
 8. Test full governance lifecycle on Mordor
 ```
 

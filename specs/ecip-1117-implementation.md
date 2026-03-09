@@ -62,15 +62,13 @@ Multi-stage resolution: designated reporting → challenge period → escalation
 
 ## Deployments
 
-### Mordor (Current — prototype)
+Contract addresses will be updated at deployment. Production deployment occurs in Stage 3 after CoreDAO (Stage 2) is operational.
 
-| Contract | Address | Status |
-|----------|---------|--------|
-| OlympiaFutarchyGovernor | `0xEc4AA90c812a997EA0Aa5BDc1A5777B75fB2db54` | Deployed |
-| LMSRMarketMaker | Deployed alongside FutarchyGovernor | Deployed |
-| WelfareMetricOracleAdapter | Deployed alongside FutarchyGovernor | Deployed |
-
-**Note:** These are prototype deployments. Production deployment occurs in Phase 3 after CoreDAO (Stage 2) is operational.
+| Contract | Mordor | Status |
+|----------|--------|--------|
+| OlympiaFutarchyGovernor | TBD | Pending deployment |
+| LMSRMarketMaker | TBD | Pending deployment |
+| WelfareMetricOracleAdapter | TBD | Pending deployment |
 
 ## Implementation Status
 

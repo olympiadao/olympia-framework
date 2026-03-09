@@ -48,13 +48,12 @@ func finalizeBlock(block, state) {
 
 ## Treasury Address
 
+Addresses will be updated with Mordor and mainnet addresses at deployment. See ECIP-1112 implementation spec.
+
 | Network | Address | Derivation |
 |---------|---------|------------|
-| Mordor | `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2` | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_V1")` |
-| Mordor V2 | TBD (pending redeploy with AccessControlDefaultAdminRules) | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_MORDOR_V2")` |
-| ETC Mainnet | TBD | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_MAINNET_V1")` |
-
-**Note:** Treasury V2 redeploy is planned to upgrade from `AccessControl` to `AccessControlDefaultAdminRules` (OZ v5.6). See ECIP-1112 implementation spec. All 3 client branches will be updated with the new address.
+| Mordor | TBD | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_MORDOR")` |
+| ETC Mainnet | TBD | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_MAINNET")` |
 
 ## Client Implementation Status
 

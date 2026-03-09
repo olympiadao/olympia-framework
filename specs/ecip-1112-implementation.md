@@ -84,7 +84,7 @@ Phase 4: Admin Renouncement
   No further role changes possible
 ```
 
-## Contract Interface (V2)
+## Contract Interface
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -124,20 +124,14 @@ contract OlympiaTreasury is AccessControlDefaultAdminRules {
 
 ## Deployments
 
-### V1 (Current — to be superseded)
+Contract addresses will be updated with Mordor and mainnet addresses at deployment.
 
 | Network | Address | Salt | Status |
 |---------|---------|------|--------|
-| Mordor | `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2` | `keccak256("OLYMPIA_TREASURY_V1")` | Deployed, active in client branches |
+| Mordor | TBD | `keccak256("OLYMPIA_TREASURY_MORDOR")` | Pending deployment |
+| ETC Mainnet | TBD | `keccak256("OLYMPIA_TREASURY_MAINNET")` | Pending deployment |
 
-### V2 (Planned — AccessControlDefaultAdminRules upgrade)
-
-| Network | Address | Salt | Status |
-|---------|---------|------|--------|
-| Mordor | TBD | `keccak256("OLYMPIA_TREASURY_MORDOR_V2")` | Pending deployment |
-| ETC Mainnet | TBD | `keccak256("OLYMPIA_TREASURY_MAINNET_V1")` | Pending deployment |
-
-**Redeploy implications:** V2 has different bytecode → different CREATE2 address. All 3 client olympia branches must be updated:
+Upon deployment, all 3 client olympia branches must be updated:
 - core-geth: `params/config_mordor.go` → `OlympiaTreasuryAddress`
 - besu-etc: Mordor genesis config → treasury address
 - fukuii: Mordor chain config → treasury address
@@ -150,7 +144,7 @@ contract DeployScript is Script {
         // Versioned salt per network
         bytes32 salt = keccak256(abi.encodePacked(
             "OLYMPIA_TREASURY_",
-            block.chainid == 63 ? "MORDOR_V2" : "MAINNET_V1"
+            block.chainid == 63 ? "MORDOR" : "MAINNET"
         ));
 
         uint48 adminDelay = 3 days; // governance-appropriate delay

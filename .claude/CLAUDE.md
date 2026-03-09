@@ -72,15 +72,12 @@ olympia-framework/
 
 ---
 
-## Key Addresses (Mordor, chainId 63)
+## Key Addresses
+
+Contract addresses will be populated at deployment. See README.md Deployment Addresses table.
 
 | Contract | Address |
 |----------|---------|
-| Treasury V1 | `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2` |
-| OlympiaMemberNFT | `0x628402C22e0AcFe24Df60EF1Dfb848376E1CdC4b` |
-| DGovernor (V1) | `0x10107eBC22d63150449c43A862Ed737E9BFee63B` |
-| Timelock | `0x043E027251a743461d0fF70C5389A6f7Fb9e2c36` |
-| FutarchyGovernor | `0xEc4AA90c812a997EA0Aa5BDc1A5777B75fB2db54` |
 | Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` |
 
 ---

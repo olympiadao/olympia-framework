@@ -106,7 +106,7 @@ EIP-3198 provides the `BASEFEE` opcode (0x48) so smart contracts can read the cu
 
 An immutable vault contract deployed via CREATE2 at a deterministic address. The Treasury:
 
-- Receives basefee via consensus state credit (not via `receive()`)
+- Receives basefee via consensus state credit
 - Also accepts voluntary donations (ETC Coop, Grayscale, third parties)
 - Permits withdrawals only through role-gated access control (`WITHDRAWER_ROLE`)
 - Contains zero governance logic — it is a minimal vault
@@ -130,8 +130,7 @@ Phase 4: Admin Renouncement
   Admin renounced → immutable vault, no further role changes
 ```
 
-**Mordor V1 address:** `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2`
-**V2 redeploy planned:** Upgrade to `AccessControlDefaultAdminRules` with versioned CREATE2 salt.
+**Deployment:** Mordor and mainnet addresses will be set at deployment. The Treasury is deployed via CREATE2 for deterministic addressing.
 
 ### ECIP-1121: EVM Compatibility Sprint
 
@@ -176,7 +175,7 @@ OlympiaMemberNFT
 
 **Key design decisions:**
 
-1. **No governance token.** Olympia launches with NFT-based voting via `OlympiaMemberNFT`. Any future tokenization must go through an OIP (Olympia Improvement Proposal). The `IOlympiaVotingModule` interface abstracts voting power — the Governor doesn't care where votes come from.
+1. **No governance token.** Olympia launches with NFT-based membership voting — no token distribution, no bootstrapping problem. Any future tokenization must go through an OIP (Olympia Improvement Proposal). The `IOlympiaVotingModule` interface abstracts voting power — the Governor doesn't care where votes come from.
 
 2. **Modular voting.** The `IOlympiaVotingModule` interface provides `votingPower(address, uint256)` and `isEligible(address, uint256)`. Phase 1 wraps the existing NFT. Future phases add sybil resistance and domain restriction layers via OIP without changing the Governor.
 
@@ -235,7 +234,7 @@ Prediction market governance using paired conditional markets. For each proposal
 - **Privacy layer** — encrypted position submission, revocable commitments (anti-collusion)
 - **Minority exit** — proportionate withdrawal for dissenters
 
-The research repo has 1,345 tests. Prototype deployed on Mordor at `0xEc4AA90c812a997EA0Aa5BDc1A5777B75fB2db54`.
+The research repo has 1,345 tests.
 
 ### ECIP-1118: Streaming Disbursements
 
@@ -308,7 +307,7 @@ Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution cu
 | ECIP | Title | Stage | Type | Status |
 |------|-------|-------|------|--------|
 | 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
-| 1112 | Treasury Contract | 1 | Consensus | Deployed (V2 pending) |
+| 1112 | Treasury Contract | 1 | Consensus | Pending deployment |
 | 1113 | CoreDAO Governance Framework | 2 | Contract | Governor rewrite needed |
 | 1114 | ECFP Funding Proposals | 2 | Contract | ECFPRegistry pending |
 | 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
@@ -335,15 +334,19 @@ Cross-client verification completed via six-client audit (March 2026). All conse
 
 ---
 
-## Mordor Deployment Addresses
+## Deployment Addresses
 
-| Contract | Address | Status |
-|----------|---------|--------|
-| Treasury V1 | `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2` | Deployed |
-| OlympiaMemberNFT | `0x628402C22e0AcFe24Df60EF1Dfb848376E1CdC4b` | Deployed |
-| DGovernor (V1, prototype) | `0x10107eBC22d63150449c43A862Ed737E9BFee63B` | To be replaced |
-| Timelock | `0x043E027251a743461d0fF70C5389A6f7Fb9e2c36` | Deployed, reusable |
-| FutarchyGovernor | `0xEc4AA90c812a997EA0Aa5BDc1A5777B75fB2db54` | Prototype |
+Contract addresses will be populated at deployment.
+
+| Contract | Mordor | ETC Mainnet |
+|----------|--------|-------------|
+| OlympiaTreasury | TBD | TBD |
+| OlympiaGovernor | TBD | TBD |
+| OlympiaExecutor | TBD | TBD |
+| NFTVotingModuleAdapter | TBD | TBD |
+| SanctionsOracle | TBD | TBD |
+| Timelock | TBD | TBD |
+| OlympiaMemberNFT | TBD | TBD |
 | Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
 
 ---
@@ -353,7 +356,7 @@ Cross-client verification completed via six-client audit (March 2026). All conse
 The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is the transition from "Treasury accumulates" to "Treasury has functional withdrawals."
 
 ```
-1. Deploy OlympiaTreasury V2 (AccessControlDefaultAdminRules)
+1. Deploy OlympiaTreasury (AccessControlDefaultAdminRules)
    → Update Treasury address in all 3 client olympia branches
 
 2. Deploy SanctionsOracle
@@ -362,7 +365,7 @@ The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is th
 
 4. Deploy OlympiaTimelock (or reconfigure existing)
 
-5. Deploy OlympiaExecutor (treasury V2 + timelock + sanctionsOracle)
+5. Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
 
 6. Deploy OlympiaGovernor (votingModule + timelock + sanctionsOracle)
 
@@ -370,7 +373,7 @@ The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is th
    Governor = PROPOSER + CANCELLER
    Executor = EXECUTOR
 
-8. Grant WITHDRAWER_ROLE on Treasury V2 to OlympiaExecutor
+8. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
 
 9. Test full governance lifecycle on Mordor:
    deposit → propose → vote → queue → timelock → execute → receive
