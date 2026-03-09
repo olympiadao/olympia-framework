@@ -1,0 +1,25 @@
+# Secrets & credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# Claude internal
+.claude/SESSION_NOTES.md
+.claude/reports/
+.claude/debug.log
+
+# Planning docs
+SESSION_NOTES.md
+PLANNING.md
+SCRATCH.md
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json

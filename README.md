@@ -1,1 +1,441 @@
-# oympia-framework
+# Olympia Framework
+
+**A Staged Governance and Funding System for Ethereum Classic**
+
+Authors: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
+Date: March 2026
+License: CC0-1.0
+
+---
+
+## What Is Olympia?
+
+Olympia is a framework for sustainable protocol funding on Ethereum Classic. It redirects a small portion of transaction fees (the EIP-1559 basefee) into an on-chain Treasury, then builds governance layers on top to decide how those funds are spent.
+
+The framework is designed as a **staged rollout** — each stage addresses a specific concern and unlocks the next. Nothing is optional; each layer builds on the operational reality of the previous one.
+
+**Core thesis:** ETC's block rewards decline every 5 million blocks (ECIP-1017). Fee revenue is currently negligible. As block rewards drop, the network needs a mechanism to fund core development, critical infrastructure, and security incentives. Olympia provides that mechanism without changing the emission schedule or monetary policy.
+
+---
+
+## The Problem
+
+1. **Block reward decline.** Era 4 (current): 2.048 ETC/block. Era 5: 1.6384 ETC/block. Era 6: 1.31072 ETC/block. Each era is a 20% reduction.
+
+2. **No protocol-level funding.** ETC relies entirely on external donations (ETC Coop, Grayscale trust) for development, infrastructure, and tooling. These are voluntary and fragile.
+
+3. **Fee revenue is negligible.** At current activity (~5 txs/block), tips represent 0.01% of miner income. The basefee is effectively zero. But if usage grows post-Olympia (EVM compatibility, new tx types), this changes.
+
+4. **No governance mechanism.** Even if funds accumulate, there's no on-chain process to allocate them transparently.
+
+Olympia solves all four by building from the bottom up: first accumulate, then govern, then experiment, then harden.
+
+---
+
+## Five Stages
+
+```
+┌───────────────────────────────────────────────────────┐
+│  STAGE 1: OLYMPIA HARD FORK                           │
+│  Consensus layer — basefee redirect + EVM upgrade     │
+│  ECIPs: 1111, 1112, 1121                              │
+│  Mordor: block 15,800,850 (~Mar 28, 2026)             │
+│  Mainnet: ~24,751,337 (~mid-June 2026)                │
+└───────────────┬───────────────────────────────────────┘
+                │ Treasury accumulates basefee + donations
+                │ No withdrawals — iron out governance details
+                ▼
+┌───────────────────────────────────────────────────────┐
+│  STAGE 2: CoreDAO GOVERNANCE                          │
+│  Contract layer — traditional DAO pipeline            │
+│  ECIPs: 1113, 1114, 1119                              │
+│  First withdrawals enabled                            │
+└───────────────┬───────────────────────────────────────┘
+                │ Core needs met, redirect to public platform
+                ▼
+┌───────────────────────────────────────────────────────┐
+│  STAGE 3: FUTARCHY DAO                                │
+│  Contract layer — prediction market governance        │
+│  ECIPs: 1117, 1118                                    │
+│  Open platform for experimental proposals             │
+└───────────────┬───────────────────────────────────────┘
+                │ Empirical data from fee market
+                ▼
+┌───────────────────────────────────────────────────────┐
+│  STAGE 4: MINER DISTRIBUTION EXPERIMENTATION          │
+│  Contract layer — L-curve smoothing                   │
+│  ECIP: 1115                                           │
+│  Test curves, amounts, strategies                     │
+└───────────────┬───────────────────────────────────────┘
+                │ Proven parameters → protocol embedding
+                ▼
+┌───────────────────────────────────────────────────────┐
+│  STAGE 5: PROTOCOL HARDCODE                           │
+│  Consensus layer — second hard fork                   │
+│  ECIPs: 1116, 1122                                    │
+│  Embed validated split + distribution at protocol     │
+└───────────────────────────────────────────────────────┘
+```
+
+---
+
+## Stage 1: Olympia Hard Fork
+
+**ECIPs:** 1111, 1112, 1121
+**Type:** Consensus layer (hard fork)
+**Activation:** Mordor block 15,800,850, ETC mainnet ~24,751,337
+
+Stage 1 does two things: activates EIP-1559 (redirecting basefee to a Treasury instead of burning it) and brings ETC's EVM up to parity with Ethereum's latest opcodes and precompiles.
+
+### ECIP-1111: EIP-1559 + EIP-3198
+
+EIP-1559 introduces dynamic basefee pricing and Type-2 transactions. On Ethereum, the basefee is burned. On ETC, 100% of the basefee is credited to the Treasury address during block finalization via consensus-layer state credit.
+
+**Impact on miners:** At current activity levels (~5 txs/block), the basefee adds ~1 gwei per transaction — less than 0.01% of miner income. Priority fees (tips) remain 100% payable to miners. Block rewards are unchanged.
+
+```
+Block Finalization:
+  baseFeeAmount = block.gasUsed × block.baseFee
+  state.AddBalance(TreasuryAddress, baseFeeAmount)    ← ETC deviation
+  // Ethereum burns this; ETC redirects to Treasury
+```
+
+EIP-3198 provides the `BASEFEE` opcode (0x48) so smart contracts can read the current basefee.
+
+### ECIP-1112: Olympia Treasury
+
+An immutable vault contract deployed via CREATE2 at a deterministic address. The Treasury:
+
+- Receives basefee via consensus state credit (not via `receive()`)
+- Also accepts voluntary donations (ETC Coop, Grayscale, third parties)
+- Permits withdrawals only through role-gated access control (`WITHDRAWER_ROLE`)
+- Contains zero governance logic — it is a minimal vault
+
+The Treasury uses OpenZeppelin's `AccessControlDefaultAdminRules` (v5.6) for staged governance activation:
+
+```
+Phase 1: Bootstrap
+  DEFAULT_ADMIN_ROLE → deployer EOA
+  WITHDRAWER_ROLE → deployer EOA
+  Treasury accumulates, no withdrawals
+
+Phase 2: CoreDAO Activation
+  WITHDRAWER_ROLE → OlympiaExecutor
+  DEFAULT_ADMIN_ROLE → CoreDAO governance (2-step transfer with delay)
+
+Phase 3: Futarchy Integration
+  Additional WITHDRAWER_ROLE → FutarchyExecutor
+
+Phase 4: Admin Renouncement
+  Admin renounced → immutable vault, no further role changes
+```
+
+**Mordor V1 address:** `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2`
+**V2 redeploy planned:** Upgrade to `AccessControlDefaultAdminRules` with versioned CREATE2 salt.
+
+### ECIP-1121: EVM Compatibility Sprint
+
+15 EIPs activated alongside ECIP-1111 in the same fork. These are independent of the fee market — they bring ETC's EVM to parity with Ethereum's latest capabilities.
+
+**Key additions:**
+- **MCOPY** (EIP-5656): Efficient memory-to-memory copy
+- **Transient storage** (EIP-1153): `TSTORE`/`TLOAD` — ephemeral within a transaction
+- **BLS12-381** (EIP-2537): Cryptographic precompile for zero-knowledge proofs
+- **EOA code delegation** (EIP-7702): Set code on externally owned accounts
+- **secp256r1** (EIP-7951): WebAuthn/passkey support via precompile
+- **Historical block hashes** (EIP-2935): Block hashes persisted in state
+- **SELFDESTRUCT restriction** (EIP-6780): Forward compatibility
+- **Gas and safety EIPs** (7623, 7825, 7883, 7934, 7935): Calldata cost, gas cap, block size
+
+**Excluded:** All blob/data availability EIPs (ETC has no blob layer), all PoS/Beacon Chain EIPs.
+
+**Client status:** All 3 clients (core-geth, besu-etc, fukuii) have complete implementations. All tests pass.
+
+---
+
+## Stage 2: CoreDAO Governance
+
+**ECIPs:** 1113, 1114, 1119
+**Type:** Contract layer (no fork required)
+
+Stage 2 transitions the Treasury from "accumulate only" to "functional withdrawals." This is the traditional DAO pipeline — not concerned with decentralization off the bat, focused on funding core development and critical infrastructure transparently.
+
+### ECIP-1113: Olympia DAO Governance Framework
+
+The governance pipeline:
+
+```
+OlympiaGovernor ──→ Timelock ──→ OlympiaExecutor ──→ Treasury.withdraw()
+       ↑                                ↑
+IOlympiaVotingModule            SanctionsOracle (ECIP-1119)
+       ↑
+NFTVotingModuleAdapter
+       ↑
+OlympiaMemberNFT
+```
+
+**Key design decisions:**
+
+1. **No governance token.** Olympia launches with NFT-based voting via `OlympiaMemberNFT`. Any future tokenization must go through an OIP (Olympia Improvement Proposal). The `IOlympiaVotingModule` interface abstracts voting power — the Governor doesn't care where votes come from.
+
+2. **Modular voting.** The `IOlympiaVotingModule` interface provides `votingPower(address, uint256)` and `isEligible(address, uint256)`. Phase 1 wraps the existing NFT. Future phases add sybil resistance and domain restriction layers via OIP without changing the Governor.
+
+3. **OlympiaExecutor.** A thin contract sitting between Timelock and Treasury. Holds `WITHDRAWER_ROLE`, checks the SanctionsOracle before every `Treasury.withdraw()` call. Immutable references to treasury, timelock, and sanctions oracle.
+
+4. **Self-upgrade via OIP.** The Governor exposes `updateVotingModule()`, `updateSanctionsOracle()`, and governance parameter setters — all gated by `onlyGovernance`. The system can evolve without redeployment.
+
+### ECIP-1114: ECFP (Funding Proposals)
+
+The Ethereum Classic Funding Proposal (ECFP) process. Permissionless submission via an on-chain `ECFPRegistry`:
+
+```
+hashId = keccak256(ecfpId, recipient, amount, metadataCID, chainId)
+```
+
+Lifecycle: Submit → Draft → Active (voting) → Approved → Queued (timelock) → Executed → Completed.
+
+Hash-bound integrity ensures the proposal that was approved is the exact proposal that executes. The ECFPRegistry handles this at the application layer — the Treasury itself remains a minimal vault.
+
+### ECIP-1119: Sanctions Constraint
+
+**Non-negotiable:** Sanctions MUST activate with withdrawals. No funds leave the Treasury without screening.
+
+Three-layer defense:
+
+| Layer | Where | Purpose |
+|-------|-------|---------|
+| 1 | `Governor.propose()` | Early rejection — saves wasted governance cycles |
+| 2 | `cancelIfSanctioned(proposalId)` | Permissionless mid-lifecycle cancel — anyone can call |
+| 3 | `Executor.executeTreasury()` | Final gate — atomic revert, the security invariant |
+
+The `SanctionsOracle` is a governance-managed blocklist: `addSanctioned(address)` and `removeSanctioned(address)` via `MANAGER_ROLE`. Read-only `isSanctioned(address)` is called by Governor and Executor. Fail-closed: if the oracle reverts, execution reverts.
+
+---
+
+## Stage 3: Futarchy DAO
+
+**ECIPs:** 1117, 1118
+**Type:** Contract layer
+
+Once CoreDAO handles mandatory operational needs (Stage 2), Stage 3 opens a platform for contentious or experimental proposals. Built to amplify on-chain transactions — a positive flywheel inside the governance system itself.
+
+### ECIP-1117: Futarchy Governance
+
+Prediction market governance using paired conditional markets. For each proposal:
+
+1. Two markets are created: "expected welfare if approved" vs. "expected welfare if rejected"
+2. Market prices aggregate information from participants
+3. If the approval market's price exceeds the rejection market's price by a threshold, the proposal passes
+4. Execution routes through a FutarchyExecutor → SanctionsOracle → Treasury.withdraw()
+
+**Key components:**
+- **Welfare Metric Registry** — governance-approved metrics (security, usage, sustainability)
+- **Conditional Market Factory** — deterministic paired market creation
+- **LMSR AMM** — Logarithmic Market Scoring Rule for continuous pricing and bounded loss
+- **Privacy layer** — encrypted position submission, revocable commitments (anti-collusion)
+- **Minority exit** — proportionate withdrawal for dissenters
+
+The research repo has 1,345 tests. Prototype deployed on Mordor at `0xEc4AA90c812a997EA0Aa5BDc1A5777B75fB2db54`.
+
+### ECIP-1118: Streaming Disbursements
+
+Milestone-gated streaming for approved proposals. Funds release incrementally, not lump-sum.
+
+**Allocation categories:** Market Liquidity, Participant Incentives, Infrastructure Operations, Strategic Reserves.
+
+**Proposal classes:** Infrastructure Service, Market Liquidity & Incentive, Development & Tooling, Exceptional/Emergency.
+
+**Safety mechanisms:**
+- Milestone verification before each tranche release
+- Governance-authorized clawback (can terminate streams, reclaim unearned funds)
+- Cannot retroactively invalidate funds earned under verified milestones
+- Sustainability constraint: disbursements should not persistently exceed inflows
+
+---
+
+## Stage 4: Miner Distribution Experimentation
+
+**ECIP:** 1115
+**Type:** Contract layer
+
+Miners still have block rewards and fees are currently negligible. This stage matters most once the fee market is relevant — after Olympia activates and Type-2 transactions generate real basefee data.
+
+### ECIP-1115: L-Curve Smoothing
+
+A governance-controlled mechanism to reshape the timing of basefee-derived miner incentives:
+
+```
+R_k = f · B_k                          (smoothed portion)
+A(k + j) = R_k · L(j)    for j = 1…N   (payout schedule)
+```
+
+Where:
+- `B_k` is the basefee revenue for block `k`
+- `f` is the governance-selected allocation fraction (0 ≤ f ≤ 1)
+- `L(j)` is the weighting function across a window of `N` blocks
+- All parameters adjustable via OIP without a hard fork
+
+The `SmoothingModule` computes intended allocations. The `MinerRewardModule` maps outputs to miner addresses and prepares Treasury withdrawal calls. Neither module holds funds or modifies Treasury balances.
+
+**Goal:** Empirical data. What smoothing curves, fee amounts, and strategies best stabilize the security budget across block reward decline cycles? Trust measurements, not opinions.
+
+---
+
+## Stage 5: Protocol Hardcode
+
+**ECIPs:** 1116, 1122
+**Type:** Consensus layer (second hard fork)
+
+Only proceeds after Stage 4 produces empirical data validating which parameters are appropriate for protocol embedding. Too risky to hardcode without ironing out variables first.
+
+### ECIP-1116: Basefee Split
+
+Embeds a fixed split ratio at consensus. Proposed: 5% basefee → Treasury, 95% → miners. But the exact ratio comes from Stage 4 data.
+
+```
+TreasuryPortion      = floor(TotalBaseFee × 5 / 100)
+BlockProducerPortion = TotalBaseFee − TreasuryPortion
+```
+
+### ECIP-1122: Protocol-Native Miner Distribution
+
+Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution curve at consensus — the pattern that Stage 4 experimentation proved optimal. Paired with ECIP-1116 in the same second hard fork.
+
+---
+
+## ECIP Index
+
+| ECIP | Title | Stage | Type | Status |
+|------|-------|-------|------|--------|
+| 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
+| 1112 | Treasury Contract | 1 | Consensus | Deployed (V2 pending) |
+| 1113 | CoreDAO Governance Framework | 2 | Contract | Governor rewrite needed |
+| 1114 | ECFP Funding Proposals | 2 | Contract | ECFPRegistry pending |
+| 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
+| 1116 | Basefee Split (5%/95%) | 5 | Consensus | Deferred |
+| 1117 | Futarchy DAO | 3 | Contract | Prototype deployed |
+| 1118 | Streaming Disbursements | 3 | Contract | Phase 3 |
+| 1119 | Sanctions Constraint | 2 | Contract | Pending |
+| 1121 | EVM Compatibility Sprint | 1 | Consensus | Implemented (3 clients) |
+| 1122 | Protocol-Native Miner Distribution | 5 | Consensus | Deferred |
+
+---
+
+## Client Status
+
+Three independent ETC client implementations, all with complete Olympia support:
+
+| Client | Language | Branch | Commit | Tests |
+|--------|----------|--------|--------|-------|
+| core-geth v1.12.21 | Go 1.24 | `olympia` | `b1c759dcc` | ALL PASS |
+| besu-etc v26.3 | Java 21 | `olympia` | `52dc37b5bf` | ALL PASS |
+| fukuii v0.1.240 | Scala 3.3 | `olympia` | `126c1fd5c` | ALL PASS (2,308) |
+
+Cross-client verification completed via six-client audit (March 2026). All consensus-critical bugs found and fixed. All 3 clients produce identical Treasury balances.
+
+---
+
+## Mordor Deployment Addresses
+
+| Contract | Address | Status |
+|----------|---------|--------|
+| Treasury V1 | `0xCfE1e0ECbff745e6c800fF980178a8dDEf94bEe2` | Deployed |
+| OlympiaMemberNFT | `0x628402C22e0AcFe24Df60EF1Dfb848376E1CdC4b` | Deployed |
+| DGovernor (V1, prototype) | `0x10107eBC22d63150449c43A862Ed737E9BFee63B` | To be replaced |
+| Timelock | `0x043E027251a743461d0fF70C5389A6f7Fb9e2c36` | Deployed, reusable |
+| FutarchyGovernor | `0xEc4AA90c812a997EA0Aa5BDc1A5777B75fB2db54` | Prototype |
+| Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
+
+---
+
+## What's Next: Stage 2 Deployment
+
+The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is the transition from "Treasury accumulates" to "Treasury has functional withdrawals."
+
+```
+1. Deploy OlympiaTreasury V2 (AccessControlDefaultAdminRules)
+   → Update Treasury address in all 3 client olympia branches
+
+2. Deploy SanctionsOracle
+
+3. Deploy NFTVotingModuleAdapter (wrapping existing OlympiaMemberNFT)
+
+4. Deploy OlympiaTimelock (or reconfigure existing)
+
+5. Deploy OlympiaExecutor (treasury V2 + timelock + sanctionsOracle)
+
+6. Deploy OlympiaGovernor (votingModule + timelock + sanctionsOracle)
+
+7. Configure Timelock roles:
+   Governor = PROPOSER + CANCELLER
+   Executor = EXECUTOR
+
+8. Grant WITHDRAWER_ROLE on Treasury V2 to OlympiaExecutor
+
+9. Test full governance lifecycle on Mordor:
+   deposit → propose → vote → queue → timelock → execute → receive
+
+10. Validate sanctions at every layer:
+    propose (sanctioned → revert)
+    cancelIfSanctioned (mid-lifecycle)
+    execute (final gate)
+```
+
+---
+
+## Design Principles
+
+1. **Accumulate first, govern later.** The Treasury starts as a receive-only vault. Governance matures separately. No withdrawals until the governance pipeline is battle-tested.
+
+2. **Contract before consensus.** Experiment with parameters at the contract layer (adjustable via OIP) before embedding them at the consensus layer (requires a hard fork). This applies to fee splits (ECIP-1116) and miner distribution (ECIP-1122).
+
+3. **Layered defense.** Sanctions checking at three points (propose, cancel, execute) ensures no single failure mode bypasses screening. The execution-time check is the security invariant.
+
+4. **Modular voting.** The `IOlympiaVotingModule` interface decouples the Governor from any specific voting mechanism. NFT voting today, weighted voting tomorrow — no Governor redeployment needed.
+
+5. **Staged governance lifecycle.** The Treasury admin progresses from deployer EOA → CoreDAO governance → admin renounced. `AccessControlDefaultAdminRules` provides 2-step transfers with mandatory delay at each transition.
+
+6. **Empirical before dogmatic.** Phase 4 (L-curve experimentation) exists because we don't know the right basefee split or miner distribution curve. The answer comes from data, not from committee preference. Phase 5 only proceeds after Phase 4 validates the model.
+
+7. **Miner-first economics.** Olympia does not compete with miners. Block rewards and priority fees are untouched. The basefee redirect adds ~1 gwei/tx at current volumes — negligible relative to the 2.048 ETC block reward. The basefee and tips are additive, not competitive.
+
+---
+
+## Implementation Specs
+
+Full implementation specifications for all 11 ECIPs are in [`specs/`](specs/):
+
+| ECIP | Spec | Stage |
+|------|------|-------|
+| 1111 | [ecip-1111-implementation.md](specs/ecip-1111-implementation.md) | 1 — Hard Fork |
+| 1112 | [ecip-1112-implementation.md](specs/ecip-1112-implementation.md) | 1 — Hard Fork |
+| 1113 | [ecip-1113-implementation.md](specs/ecip-1113-implementation.md) | 2 — CoreDAO |
+| 1114 | [ecip-1114-implementation.md](specs/ecip-1114-implementation.md) | 2 — CoreDAO |
+| 1115 | [ecip-1115-implementation.md](specs/ecip-1115-implementation.md) | 4 — Miner Experimentation |
+| 1116 | [ecip-1116-implementation.md](specs/ecip-1116-implementation.md) | 5 — Protocol Hardcode |
+| 1117 | [ecip-1117-implementation.md](specs/ecip-1117-implementation.md) | 3 — Futarchy |
+| 1118 | [ecip-1118-implementation.md](specs/ecip-1118-implementation.md) | 3 — Futarchy |
+| 1119 | [ecip-1119-implementation.md](specs/ecip-1119-implementation.md) | 2 — CoreDAO |
+| 1121 | [ecip-1121-implementation.md](specs/ecip-1121-implementation.md) | 1 — Hard Fork |
+| 1122 | [ecip-1122-implementation.md](specs/ecip-1122-implementation.md) | 5 — Protocol Hardcode |
+
+Each spec includes contract interfaces, deployment details, gap analysis against the original draft, amendments with rationale, test requirements, and verification commands.
+
+---
+
+## Repos
+
+| Repo | Org | Purpose |
+|------|-----|---------|
+| [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | olympiadao | Treasury Solidity + Foundry tests |
+| [degov](https://github.com/olympiadao/degov) | olympiadao | Governor contracts (OZ-based) |
+| [core-geth](https://github.com/chris-mercer/core-geth) | chris-mercer | Go ETC client (`etc` + `olympia` branches) |
+| fukuii-client | *(private)* | Scala ETC client (`alpha` + `olympia` branches) |
+| olympia-futarchy | *(local)* | Futarchy research + 1,345 tests |
+| [ECIPs](https://github.com/ethereumclassic/ECIPs) | ethereumclassic | Published ECIP specifications |
+
+---
+
+## Copyright
+
+Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
