@@ -336,11 +336,11 @@ Cross-client verification completed via six-client audit (March 2026). All conse
 
 ## Deployment Addresses
 
-Contract addresses will be populated at deployment.
+Contract addresses are populated at deployment.
 
 | Contract | Mordor | ETC Mainnet |
 |----------|--------|-------------|
-| OlympiaTreasury | TBD | TBD |
+| OlympiaTreasury | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` |
 | OlympiaGovernor | TBD | TBD |
 | OlympiaExecutor | TBD | TBD |
 | NFTVotingModuleAdapter | TBD | TBD |

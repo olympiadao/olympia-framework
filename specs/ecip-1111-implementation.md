@@ -48,12 +48,12 @@ func finalizeBlock(block, state) {
 
 ## Treasury Address
 
-Addresses will be updated with Mordor and mainnet addresses at deployment. See ECIP-1112 implementation spec.
+Deployed via CREATE2 with a single salt for deterministic addressing across both chains. See ECIP-1112 implementation spec.
 
 | Network | Address | Derivation |
 |---------|---------|------------|
-| Mordor | TBD | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_MORDOR")` |
-| ETC Mainnet | TBD | CREATE2 with salt `keccak256("OLYMPIA_TREASURY_MAINNET")` |
+| Mordor | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | CREATE2 with salt `keccak256("OLYMPIA_DEMO_V0_1")` |
+| ETC Mainnet | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | CREATE2 with salt `keccak256("OLYMPIA_DEMO_V0_1")` |
 
 ## Client Implementation Status
 

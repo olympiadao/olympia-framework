@@ -124,17 +124,17 @@ contract OlympiaTreasury is AccessControlDefaultAdminRules {
 
 ## Deployments
 
-Contract addresses will be updated with Mordor and mainnet addresses at deployment.
+Demo v0.1 deployment uses a single CREATE2 salt for deterministic addressing across both chains.
 
 | Network | Address | Salt | Status |
 |---------|---------|------|--------|
-| Mordor | TBD | `keccak256("OLYMPIA_TREASURY_MORDOR")` | Pending deployment |
-| ETC Mainnet | TBD | `keccak256("OLYMPIA_TREASURY_MAINNET")` | Pending deployment |
+| Mordor | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `keccak256("OLYMPIA_DEMO_V0_1")` | Deployed |
+| ETC Mainnet | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `keccak256("OLYMPIA_DEMO_V0_1")` | Deployed |
 
-Upon deployment, all 3 client olympia branches must be updated:
-- core-geth: `params/config_mordor.go` → `OlympiaTreasuryAddress`
-- besu-etc: Mordor genesis config → treasury address
-- fukuii: Mordor chain config → treasury address
+All 3 client olympia branches have been updated:
+- core-geth: `params/config_mordor.go` + `params/config_classic.go` → `OlympiaTreasuryAddress`
+- besu-etc: `config/mordor.json` + `config/classic.json` → `olympiaTreasuryAddress`
+- fukuii: `mordor-chain.conf` + `etc-chain.conf` + `gorgoroth-chain.conf` → `treasury-address`
 
 ## Deploy Script
 

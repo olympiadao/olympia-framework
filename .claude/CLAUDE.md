@@ -74,10 +74,11 @@ olympia-framework/
 
 ## Key Addresses
 
-Contract addresses will be populated at deployment. See README.md Deployment Addresses table.
+See README.md Deployment Addresses table.
 
 | Contract | Address |
 |----------|---------|
+| OlympiaTreasury | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` (Mordor + ETC mainnet) |
 | Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` |
 
 ---
