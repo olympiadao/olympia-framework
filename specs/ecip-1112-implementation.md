@@ -128,8 +128,8 @@ Demo v0.1 deployment uses a single CREATE2 salt for deterministic addressing acr
 
 | Network | Address | Salt | Status |
 |---------|---------|------|--------|
-| Mordor | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `keccak256("OLYMPIA_DEMO_V0_1")` | Deployed |
-| ETC Mainnet | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `keccak256("OLYMPIA_DEMO_V0_1")` | Deployed |
+| Mordor | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `keccak256("OLYMPIA_DEMO_V0_1")` | Demo deployed |
+| ETC Mainnet | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `keccak256("OLYMPIA_DEMO_V0_1")` | Demo deployed |
 
 All 3 client olympia branches have been updated:
 - core-geth: `params/config_mordor.go` + `params/config_classic.go` → `OlympiaTreasuryAddress`

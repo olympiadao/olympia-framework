@@ -48,7 +48,7 @@ func finalizeBlock(block, state) {
 
 ## Treasury Address
 
-Deployed via CREATE2 with a single salt for deterministic addressing across both chains. See ECIP-1112 implementation spec.
+Demo deployed via CREATE2 with a single salt for deterministic addressing across both chains. See ECIP-1112 implementation spec.
 
 | Network | Address | Derivation |
 |---------|---------|------------|

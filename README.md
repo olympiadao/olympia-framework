@@ -307,7 +307,7 @@ Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution cu
 | ECIP | Title | Stage | Type | Status |
 |------|-------|-------|------|--------|
 | 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
-| 1112 | Treasury Contract | 1 | Contract | Deployed (Mordor + ETC mainnet) |
+| 1112 | Treasury Contract | 1 | Contract | Demo deployed (Mordor + ETC mainnet) |
 | 1113 | CoreDAO Governance Framework | 2 | Contract | Governor rewrite needed |
 | 1114 | ECFP Funding Proposals | 2 | Contract | ECFPRegistry pending |
 | 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
