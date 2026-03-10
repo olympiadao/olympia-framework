@@ -307,7 +307,7 @@ Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution cu
 | ECIP | Title | Stage | Type | Status |
 |------|-------|-------|------|--------|
 | 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
-| 1112 | Treasury Contract | 1 | Consensus | Pending deployment |
+| 1112 | Treasury Contract | 1 | Contract | Deployed (Mordor + ETC mainnet) |
 | 1113 | CoreDAO Governance Framework | 2 | Contract | Governor rewrite needed |
 | 1114 | ECFP Funding Proposals | 2 | Contract | ECFPRegistry pending |
 | 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
@@ -356,8 +356,9 @@ Contract addresses are populated at deployment.
 The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is the transition from "Treasury accumulates" to "Treasury has functional withdrawals."
 
 ```
-1. Deploy OlympiaTreasury (AccessControlDefaultAdminRules)
-   → Update Treasury address in all 3 client olympia branches
+1. ✅ Deploy OlympiaTreasury (AccessControlDefaultAdminRules, OZ v5.6)
+   → Deployed: 0xd6165F3aF4281037bce810621F62B43077Fb0e37 (Mordor + ETC mainnet)
+   → All 3 client olympia branches updated
 
 2. Deploy SanctionsOracle
 
