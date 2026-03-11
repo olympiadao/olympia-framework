@@ -63,12 +63,17 @@ olympia-framework/
 
 | Repo | Org | Purpose |
 |------|-----|---------|
-| olympia-treasury-contract | olympiadao | Treasury Solidity + Foundry tests |
-| degov | olympiadao | Governor contracts (OZ-based) |
+| olympia-treasury-contract | olympiadao | Treasury vault (ECIP-1112) — deployed Mordor + ETC |
+| olympia-governance-contracts | olympiadao | SanctionsOracle, OlympiaMemberNFT, interfaces (ECIP-1113, 1119) |
+| degov | olympiadao | Original Governor prototype — archived |
+| olympia-futarchy | olympiadao | Futarchy research + prediction markets (ECIP-1117, 1118) |
+| olympia-brand | olympiadao | Logo SVGs, favicons, OG images, design tokens |
+| olympiadao-org | olympiadao | olympiadao.org landing page |
+| olympiatreasury-org | olympiadao | olympiatreasury.org landing page |
+| olympia-app | olympiadao | Governance dApp (placeholder) |
 | core-geth | chris-mercer | Go ETC client (etc + olympia branches) |
+| besu-etc | etccooperative | Java ETC client (etc + olympia branches) |
 | fukuii-client | *(private)* | Scala ETC client (alpha + olympia branches) |
-| olympia-governance-contracts | olympiadao | SanctionsOracle, OlympiaMemberNFT, interfaces (OZ v5.6) |
-| olympia-futarchy | olympiadao | Futarchy research + streaming disbursements (ECIP-1117, 1118) |
 | ECIPs | ethereumclassic | Published ECIP specifications |
 
 ---
@@ -103,7 +108,7 @@ See README.md Deployment Addresses table.
 ### Never Do
 
 - Modify client code from this repo (client changes happen in core-geth/besu/fukuii repos)
-- Modify contract source from this repo (contract changes happen in treasury/degov repos)
+- Modify contract source from this repo (contract changes happen in treasury/governance-contracts repos)
 - Commit secrets, private keys, or internal planning docs
 - Change the `supersedes` relationship between ECIPs without discussion
 
@@ -114,5 +119,5 @@ See README.md Deployment Addresses table.
 - Frontmatter uses YAML with fields: ecip, title, status, type, category, requires, supersedes, author, created, updated, license
 - Authors: `Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)`
 - License: `CC0-1.0`
-- Solidity interfaces use `pragma solidity ^0.8.20` and OpenZeppelin v5.6
+- Solidity interfaces use `pragma solidity ^0.8.28` and OpenZeppelin v5.6.0
 - All specs end with a Copyright section linking to CC0

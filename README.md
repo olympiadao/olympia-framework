@@ -431,14 +431,37 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 
 ## Repos
 
+### Contract Repos
+
+| Repo | Purpose | Stage | Status |
+|------|---------|-------|--------|
+| [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | Treasury vault — Solidity + Foundry tests (ECIP-1112) | 1 | Deployed (Mordor + ETC) |
+| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | SanctionsOracle, OlympiaMemberNFT, interfaces (ECIP-1113, 1119) | 2 | Phase 2A complete |
+| [degov](https://github.com/olympiadao/degov) | Original Governor prototype — superseded by olympia-governance-contracts | 2 | Archived |
+| [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) | Futarchy research + prediction market contracts (ECIP-1117, 1118) | 3 | Research complete |
+
+### Client Repos
+
+| Repo | Purpose | Status |
+|------|---------|--------|
+| [core-geth](https://github.com/chris-mercer/core-geth) | Go ETC client (`etc` + `olympia` branches) | Olympia implemented |
+| besu-etc | Java ETC client (`etc` + `olympia` branches) | Olympia implemented |
+| fukuii-client | Scala ETC client (`alpha` + `olympia` branches) | Olympia implemented |
+
+### Web & Brand Repos
+
+| Repo | Purpose | Status |
+|------|---------|--------|
+| [olympia-brand](https://github.com/olympiadao/olympia-brand) | Logo SVGs, favicons, OG images, design tokens | Complete |
+| [olympiadao-org](https://github.com/olympiadao/olympiadao-org) | olympiadao.org — Next.js 16 landing page | Complete |
+| [olympiatreasury-org](https://github.com/olympiadao/olympiatreasury-org) | olympiatreasury.org — Next.js 16 landing page | Complete |
+| [olympia-app](https://github.com/olympiadao/olympia-app) | Governance dApp (future) | Placeholder |
+
+### External
+
 | Repo | Org | Purpose |
 |------|-----|---------|
-| [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | olympiadao | Treasury Solidity + Foundry tests |
-| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | olympiadao | SanctionsOracle, OlympiaMemberNFT, interfaces (OZ v5.6) |
-| [degov](https://github.com/olympiadao/degov) | olympiadao | Governor contracts (OZ-based) — Demo v0.1 rewrite pending |
-| [core-geth](https://github.com/chris-mercer/core-geth) | chris-mercer | Go ETC client (`etc` + `olympia` branches) |
-| fukuii-client | *(private)* | Scala ETC client (`alpha` + `olympia` branches) |
-| [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) | olympiadao | Futarchy research + streaming disbursements (ECIP-1117, 1118) |
+| [olympia-framework](https://github.com/olympiadao/olympia-framework) | olympiadao | This repo — specs and framework document |
 | [ECIPs](https://github.com/ethereumclassic/ECIPs) | ethereumclassic | Published ECIP specifications |
 
 ---
