@@ -7,7 +7,7 @@ category: Core
 requires: 1111
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-07-04
-updated: 2026-03-10
+updated: 2026-03-11
 license: CC0-1.0
 ---
 
@@ -76,7 +76,7 @@ Phase 2: CoreDAO Activation (Stage 2)
 
 Phase 3: Futarchy Integration (Stage 3)
   Additional WITHDRAWER_ROLE → FutarchyExecutor (ECIP-1117)
-  CoreDAO codes redirect to Futarchy via governance proposal
+  CoreDAO activates Futarchy as a child DAO via governance proposal; both paths share the Treasury
 
 Phase 4: Admin Renouncement
   beginDefaultAdminTransfer(address(0)) → wait delay → renounceRole()

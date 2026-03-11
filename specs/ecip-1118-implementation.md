@@ -3,11 +3,10 @@ ecip: 1118
 title: Olympia Futarchy Funding and Disbursement Framework — Implementation Spec
 status: Implementation
 type: Meta
-requires: 1112, 1116, 1117
-replaces: 1114
+requires: 1112, 1114, 1116, 1117
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2024-12-14
-updated: 2026-03-08
+updated: 2026-03-11
 license: CC0-1.0
 ---
 
@@ -19,7 +18,7 @@ ECIP-1118 defines the funding and disbursement framework for Treasury funds used
 
 **Stage:** Phase 3 — Futarchy DAO Pipeline. Activates alongside ECIP-1117.
 
-ECIP-1118 replaces ECIP-1114 for the futarchy governance path. ECIP-1114 remains authoritative for the CoreDAO path (ECIP-1113).
+ECIP-1118 defines the Futarchy disbursement path (streaming/milestone-gated), operating alongside ECIP-1114 which handles CoreDAO lump-sum funding proposals.
 
 ## Treasury Capital Allocation Categories
 
@@ -131,7 +130,7 @@ Same SanctionsOracle (ECIP-1119) applies to all disbursements:
 
 ## Backwards Compatibility
 
-ECIP-1118 replaces ECIP-1114 for the futarchy path. Existing proposals under ECIP-1114 may continue under original terms. No changes to Treasury custody, basefee allocation, or governance approval mechanisms.
+ECIP-1118 operates alongside ECIP-1114. CoreDAO proposals continue through ECIP-1114. Futarchy proposals use ECIP-1118's streaming disbursement model. No changes to Treasury custody, basefee allocation, or governance approval mechanisms.
 
 ## Copyright
 

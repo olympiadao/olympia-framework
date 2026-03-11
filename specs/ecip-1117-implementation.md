@@ -4,10 +4,10 @@ title: Olympia Futarchy Governance Framework — Implementation Spec
 status: Implementation
 type: Meta
 requires: 1112, 1116
-replaces: 1113
+requires: 1112, 1113, 1116
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-12-14
-updated: 2026-03-10
+updated: 2026-03-11
 license: CC0-1.0
 ---
 
@@ -91,7 +91,7 @@ Contract addresses will be updated at deployment. Production deployment occurs i
 
 ## Relationship to CoreDAO (ECIP-1113)
 
-ECIP-1117 replaces ECIP-1113 for the **futarchy governance path**. However, in the staged rollout:
+ECIP-1117 is the first child DAO activated by CoreDAO (ECIP-1113) once core infrastructure needs are funded. In the staged rollout:
 
 1. **Stage 2:** CoreDAO (ECIP-1113) activates first — handles non-contentious monthly expenses, core development, critical infrastructure
 2. **Stage 3:** CoreDAO codes a governance proposal to redirect funds into Futarchy
