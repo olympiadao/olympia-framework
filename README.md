@@ -438,7 +438,7 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 | [degov](https://github.com/olympiadao/degov) | olympiadao | Governor contracts (OZ-based) — Demo v0.1 rewrite pending |
 | [core-geth](https://github.com/chris-mercer/core-geth) | chris-mercer | Go ETC client (`etc` + `olympia` branches) |
 | fukuii-client | *(private)* | Scala ETC client (`alpha` + `olympia` branches) |
-| olympia-futarchy | *(local)* | Futarchy research + 1,345 tests |
+| [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) | olympiadao | Futarchy research + streaming disbursements (ECIP-1117, 1118) |
 | [ECIPs](https://github.com/ethereumclassic/ECIPs) | ethereumclassic | Published ECIP specifications |
 
 ---

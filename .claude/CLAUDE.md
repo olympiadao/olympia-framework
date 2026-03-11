@@ -67,7 +67,8 @@ olympia-framework/
 | degov | olympiadao | Governor contracts (OZ-based) |
 | core-geth | chris-mercer | Go ETC client (etc + olympia branches) |
 | fukuii-client | *(private)* | Scala ETC client (alpha + olympia branches) |
-| olympia-futarchy | *(local)* | Futarchy research + 1,345 tests |
+| olympia-governance-contracts | olympiadao | SanctionsOracle, OlympiaMemberNFT, interfaces (OZ v5.6) |
+| olympia-futarchy | olympiadao | Futarchy research + streaming disbursements (ECIP-1117, 1118) |
 | ECIPs | ethereumclassic | Published ECIP specifications |
 
 ---
