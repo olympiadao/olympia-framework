@@ -79,6 +79,35 @@ Olympia solves all four by building from the bottom up: first accumulate, then g
 
 ---
 
+## Current Status (March 2026)
+
+```
+Stage 1: COMPLETE ████████████████████ — 3 clients, treasury deployed
+Stage 2: IN PROGRESS ████████░░░░░░░░░░░░ — Phase 2A complete, 2B next
+Stage 3: RESEARCH ████░░░░░░░░░░░░░░░░ — 1,345 tests, contracts pending
+Stage 4: DEFERRED ░░░░░░░░░░░░░░░░░░░░ — Requires fee market data
+Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ — Requires Stage 4 data
+```
+
+**Completed:**
+- Hard fork consensus code in 3 ETC clients (core-geth, besu-etc, fukuii) — all tests pass
+- Treasury deployed on Mordor + ETC mainnet at `0xd6165...Fb0e37`
+- SanctionsOracle + OlympiaMemberNFT contracts built and tested (33 tests)
+- Futarchy research complete (1,345 tests)
+- Brand assets, landing pages (olympiadao.org, olympiatreasury.org)
+
+**In progress:**
+- Mordor activation at block 15,800,850 (~March 28, 2026)
+- Phase 2B: OlympiaGovernor, Timelock, Executor contracts
+- ECFPRegistry (ECIP-1114)
+
+**Next milestones:**
+- Phase 2B contracts → deploy full governance pipeline on Mordor
+- End-to-end governance lifecycle test on Mordor
+- ETC mainnet activation at ~24,751,337 (~mid-June 2026)
+
+---
+
 ## Stage 1: Olympia Hard Fork
 
 **ECIPs:** 1111, 1112, 1121
@@ -130,7 +159,7 @@ Phase 4: Admin Renouncement
   Admin renounced → immutable vault, no further role changes
 ```
 
-**Deployment:** Mordor and mainnet addresses will be set at deployment. The Treasury is deployed via CREATE2 for deterministic addressing.
+**Deployment:** Demo v0.1 deployed at `0xd6165F3aF4281037bce810621F62B43077Fb0e37` on both Mordor and ETC mainnet via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_1")`). Client branches updated with the Treasury address.
 
 ### ECIP-1121: EVM Compatibility Sprint
 
@@ -207,7 +236,7 @@ Three-layer defense:
 | 2 | `cancelIfSanctioned(proposalId)` | Permissionless mid-lifecycle cancel — anyone can call |
 | 3 | `Executor.executeTreasury()` | Final gate — atomic revert, the security invariant |
 
-The `SanctionsOracle` is a governance-managed blocklist: `addSanctioned(address)` and `removeSanctioned(address)` via `MANAGER_ROLE`. Read-only `isSanctioned(address)` is called by Governor and Executor. Fail-closed: if the oracle reverts, execution reverts.
+The `SanctionsOracle` is a governance-managed blocklist: `addAddress(address)` and `removeAddress(address)` via `MANAGER_ROLE`. Read-only `isSanctioned(address)` is called by Governor and Executor. Custom errors (`AlreadySanctioned`, `NotSanctioned`, `ZeroAddress`) for gas-efficient reverts. Fail-closed: if the oracle reverts, execution reverts.
 
 ---
 
@@ -328,63 +357,83 @@ Three independent ETC client implementations, all with complete Olympia support:
 |--------|----------|--------|--------|-------|
 | core-geth v1.12.21 | Go 1.24 | `olympia` | `b1c759dcc` | ALL PASS |
 | besu-etc v26.3 | Java 21 | `olympia` | `52dc37b5bf` | ALL PASS |
-| fukuii v0.1.240 | Scala 3.3 | `olympia` | `126c1fd5c` | ALL PASS (2,308) |
+| fukuii v0.1.240 | Scala 3.3 LTS | `olympia` | `126c1fd5c` | ALL PASS (2,308) |
 
-Cross-client verification completed via six-client audit (March 2026). All consensus-critical bugs found and fixed. All 3 clients produce identical Treasury balances.
+Cross-client verification completed via six-client audit (March 2026). All consensus-critical bugs found and fixed. All 3 clients produce identical Treasury balances. Docker images built and smoke-tested for all 3 clients (pre-olympia + olympia tags).
 
 ---
+
+## Contract Stack
+
+All Demo v0.1 contracts use **Solidity 0.8.28**, **OpenZeppelin v5.6.0**, and **Foundry** for build/test/deploy.
 
 ## Deployment Addresses
 
-Contract addresses are populated at deployment.
-
-| Contract | Mordor | ETC Mainnet |
-|----------|--------|-------------|
-| OlympiaTreasury | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` |
-| SanctionsOracle | TBD (Phase 2A complete) | TBD |
-| OlympiaMemberNFT | TBD (Phase 2A complete) | TBD |
-| OlympiaGovernor | TBD (Phase 2B) | TBD |
-| OlympiaExecutor | TBD (Phase 2B) | TBD |
-| Timelock | TBD (Phase 2B) | TBD |
-| Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
+| Contract | Phase | Mordor | ETC Mainnet |
+|----------|-------|--------|-------------|
+| OlympiaTreasury | 1 ✅ | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` |
+| SanctionsOracle | 2A ✅ | TBD (contract built, 14 tests) | TBD |
+| OlympiaMemberNFT | 2A ✅ | TBD (contract built, 19 tests) | TBD |
+| OlympiaGovernor | 2B | TBD | TBD |
+| OlympiaExecutor | 2B | TBD | TBD |
+| OlympiaTimelock | 2B | TBD | TBD |
+| ECFPRegistry | 2B | TBD | TBD |
+| Deployer | — | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
 
 ---
 
-## What's Next: Stage 2 Deployment
+## What's Next
 
-The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is the transition from "Treasury accumulates" to "Treasury has functional withdrawals."
+The path from here to functional governance on Mordor:
+
+### Phase 2A: Foundation Contracts ✅
 
 ```
 1. ✅ Deploy OlympiaTreasury (AccessControlDefaultAdminRules, OZ v5.6)
-   → Deployed: 0xd6165F3aF4281037bce810621F62B43077Fb0e37 (Mordor + ETC mainnet)
-   → All 3 client olympia branches updated
+   → 0xd6165F3aF4281037bce810621F62B43077Fb0e37 (Mordor + ETC mainnet)
+   → All 3 client olympia branches updated with treasury address
 
-2. ✅ Build SanctionsOracle + OlympiaMemberNFT (Phase 2A — 33 tests)
+2. ✅ Build SanctionsOracle + OlympiaMemberNFT (33 tests, 14 + 19)
    → olympia-governance-contracts repo
+   → ISanctionsOracle, IERC5192, IOlympiaVotingModule interfaces
+```
 
-3. Deploy SanctionsOracle
+### Phase 2B: Governor Pipeline (next)
 
-4. Deploy OlympiaMemberNFT (soulbound, KYC-gated via MINTER_ROLE)
+```
+3. Build OlympiaGovernor (GovernorVotes + GovernorVotesQuorumFraction)
+4. Build OlympiaExecutor (treasury + timelock + sanctionsOracle)
+5. Build OlympiaTimelock (TimelockController)
+6. Build ECFPRegistry (ECIP-1114)
+```
 
-5. Deploy OlympiaTimelock
+### Phase 2C: Mordor Deployment
 
-6. Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
+```
+7. Deploy SanctionsOracle → Mordor
+8. Deploy OlympiaMemberNFT → Mordor
+9. Deploy OlympiaTimelock → Mordor
+10. Deploy OlympiaExecutor → Mordor
+11. Deploy OlympiaGovernor → Mordor
+12. Configure Timelock roles:
+    Governor = PROPOSER + CANCELLER
+    Executor = EXECUTOR
+13. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
+```
 
-7. Deploy OlympiaGovernor (GovernorVotes reads OlympiaMemberNFT directly)
+### Phase 2D: Governance Lifecycle Testing
 
-8. Configure Timelock roles:
-   Governor = PROPOSER + CANCELLER
-   Executor = EXECUTOR
-
-9. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
-
-10. Test full governance lifecycle on Mordor:
+```
+14. Test full governance lifecycle on Mordor:
     deposit → propose → vote → queue → timelock → execute → receive
 
-11. Validate sanctions at every layer:
+15. Validate sanctions at every layer:
     propose (sanctioned → revert)
     cancelIfSanctioned (mid-lifecycle)
     execute (final gate)
+
+16. Deploy ECFPRegistry → Mordor
+17. Test ECFP proposal flow end-to-end
 ```
 
 ---
