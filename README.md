@@ -166,22 +166,22 @@ The governance pipeline:
 ```
 OlympiaGovernor ──→ Timelock ──→ OlympiaExecutor ──→ Treasury.withdraw()
        ↑                                ↑
-IOlympiaVotingModule            SanctionsOracle (ECIP-1119)
+GovernorVotes (OZ)              SanctionsOracle (ECIP-1119)
        ↑
-NFTVotingModuleAdapter
-       ↑
-OlympiaMemberNFT
+OlympiaMemberNFT (soulbound ERC721Votes)
 ```
 
 **Key design decisions:**
 
-1. **No governance token.** Olympia launches with NFT-based membership voting — no token distribution, no bootstrapping problem. Any future tokenization must go through an OIP (Olympia Improvement Proposal). The `IOlympiaVotingModule` interface abstracts voting power — the Governor doesn't care where votes come from.
+1. **No governance token.** Olympia launches with soulbound NFT-based membership voting — no token distribution, no bootstrapping problem. Any future tokenization must go through an OIP (Olympia Improvement Proposal). One soulbound NFT = one vote. KYC/BrightID/Gitcoin Passport-verified accounts receive a non-transferable NFT via `MINTER_ROLE`.
 
-2. **Modular voting.** The `IOlympiaVotingModule` interface provides `votingPower(address, uint256)` and `isEligible(address, uint256)`. Phase 1 wraps the existing NFT. Future phases add sybil resistance and domain restriction layers via OIP without changing the Governor.
+2. **Standard OZ voting (Demo v0.1).** The Governor uses OZ `GovernorVotes` + `GovernorVotesQuorumFraction`, reading `getPastVotes()` directly from the soulbound `OlympiaMemberNFT`. No custom `_getVotes()` override, no adapter contract. The `IOlympiaVotingModule` interface is included as a forward-looking spec artifact for governance-gated module swaps in future releases.
 
-3. **OlympiaExecutor.** A thin contract sitting between Timelock and Treasury. Holds `WITHDRAWER_ROLE`, checks the SanctionsOracle before every `Treasury.withdraw()` call. Immutable references to treasury, timelock, and sanctions oracle.
+3. **Soulbound enforcement.** `OlympiaMemberNFT` blocks transfers in `_update()` (allows mint/burn only). Implements ERC5192 `locked()` interface. Auto-delegates on mint via `_delegate(to, to)` so votes are active immediately. Uses OZ default block number clock mode.
 
-4. **Self-upgrade via OIP.** The Governor exposes `updateVotingModule()`, `updateSanctionsOracle()`, and governance parameter setters — all gated by `onlyGovernance`. The system can evolve without redeployment.
+4. **OlympiaExecutor.** A thin contract sitting between Timelock and Treasury. Holds `WITHDRAWER_ROLE`, checks the SanctionsOracle before every `Treasury.withdraw()` call. Immutable references to treasury, timelock, and sanctions oracle.
+
+5. **Self-upgrade via OIP.** The Governor exposes `updateSanctionsOracle()` and governance parameter setters — all gated by `onlyGovernance`. The system can evolve without redeployment.
 
 ### ECIP-1114: ECFP (Funding Proposals)
 
@@ -308,13 +308,13 @@ Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution cu
 |------|-------|-------|------|--------|
 | 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
 | 1112 | Treasury Contract | 1 | Contract | Demo deployed (Mordor + ETC mainnet) |
-| 1113 | CoreDAO Governance Framework | 2 | Contract | Governor rewrite needed |
+| 1113 | CoreDAO Governance Framework | 2 | Contract | Foundation contracts complete (Demo v0.1) |
 | 1114 | ECFP Funding Proposals | 2 | Contract | ECFPRegistry pending |
 | 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
 | 1116 | Basefee Split (5%/95%) | 5 | Consensus | Deferred |
 | 1117 | Futarchy DAO | 3 | Contract | Prototype deployed |
 | 1118 | Streaming Disbursements | 3 | Contract | Phase 3 |
-| 1119 | Sanctions Constraint | 2 | Contract | Pending |
+| 1119 | Sanctions Constraint | 2 | Contract | SanctionsOracle complete (Demo v0.1) |
 | 1121 | EVM Compatibility Sprint | 1 | Consensus | Implemented (3 clients) |
 | 1122 | Protocol-Native Miner Distribution | 5 | Consensus | Deferred |
 
@@ -341,12 +341,11 @@ Contract addresses are populated at deployment.
 | Contract | Mordor | ETC Mainnet |
 |----------|--------|-------------|
 | OlympiaTreasury | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` |
-| OlympiaGovernor | TBD | TBD |
-| OlympiaExecutor | TBD | TBD |
-| NFTVotingModuleAdapter | TBD | TBD |
-| SanctionsOracle | TBD | TBD |
-| Timelock | TBD | TBD |
-| OlympiaMemberNFT | TBD | TBD |
+| SanctionsOracle | TBD (Phase 2A complete) | TBD |
+| OlympiaMemberNFT | TBD (Phase 2A complete) | TBD |
+| OlympiaGovernor | TBD (Phase 2B) | TBD |
+| OlympiaExecutor | TBD (Phase 2B) | TBD |
+| Timelock | TBD (Phase 2B) | TBD |
 | Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
 
 ---
@@ -360,26 +359,29 @@ The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is th
    → Deployed: 0xd6165F3aF4281037bce810621F62B43077Fb0e37 (Mordor + ETC mainnet)
    → All 3 client olympia branches updated
 
-2. Deploy SanctionsOracle
+2. ✅ Build SanctionsOracle + OlympiaMemberNFT (Phase 2A — 33 tests)
+   → olympia-governance-contracts repo
 
-3. Deploy NFTVotingModuleAdapter (wrapping existing OlympiaMemberNFT)
+3. Deploy SanctionsOracle
 
-4. Deploy OlympiaTimelock (or reconfigure existing)
+4. Deploy OlympiaMemberNFT (soulbound, KYC-gated via MINTER_ROLE)
 
-5. Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
+5. Deploy OlympiaTimelock
 
-6. Deploy OlympiaGovernor (votingModule + timelock + sanctionsOracle)
+6. Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
 
-7. Configure Timelock roles:
+7. Deploy OlympiaGovernor (GovernorVotes reads OlympiaMemberNFT directly)
+
+8. Configure Timelock roles:
    Governor = PROPOSER + CANCELLER
    Executor = EXECUTOR
 
-8. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
+9. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
 
-9. Test full governance lifecycle on Mordor:
-   deposit → propose → vote → queue → timelock → execute → receive
+10. Test full governance lifecycle on Mordor:
+    deposit → propose → vote → queue → timelock → execute → receive
 
-10. Validate sanctions at every layer:
+11. Validate sanctions at every layer:
     propose (sanctioned → revert)
     cancelIfSanctioned (mid-lifecycle)
     execute (final gate)
@@ -395,7 +397,7 @@ The immediate next phase is deploying the CoreDAO pipeline on Mordor. This is th
 
 3. **Layered defense.** Sanctions checking at three points (propose, cancel, execute) ensures no single failure mode bypasses screening. The execution-time check is the security invariant.
 
-4. **Modular voting.** The `IOlympiaVotingModule` interface decouples the Governor from any specific voting mechanism. NFT voting today, weighted voting tomorrow — no Governor redeployment needed.
+4. **Forward-looking modularity.** The `IOlympiaVotingModule` interface is spec'd as a design artifact for future governance-gated voting module swaps. Demo v0.1 uses standard OZ `GovernorVotes` directly. The interface will be wired in when module swapping is needed.
 
 5. **Staged governance lifecycle.** The Treasury admin progresses from deployer EOA → CoreDAO governance → admin renounced. `AccessControlDefaultAdminRules` provides 2-step transfers with mandatory delay at each transition.
 
@@ -432,7 +434,8 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 | Repo | Org | Purpose |
 |------|-----|---------|
 | [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | olympiadao | Treasury Solidity + Foundry tests |
-| [degov](https://github.com/olympiadao/degov) | olympiadao | Governor contracts (OZ-based) |
+| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | olympiadao | SanctionsOracle, OlympiaMemberNFT, interfaces (OZ v5.6) |
+| [degov](https://github.com/olympiadao/degov) | olympiadao | Governor contracts (OZ-based) — Demo v0.1 rewrite pending |
 | [core-geth](https://github.com/chris-mercer/core-geth) | chris-mercer | Go ETC client (`etc` + `olympia` branches) |
 | fukuii-client | *(private)* | Scala ETC client (`alpha` + `olympia` branches) |
 | olympia-futarchy | *(local)* | Futarchy research + 1,345 tests |

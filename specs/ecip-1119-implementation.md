@@ -40,13 +40,13 @@ ECIP-1119 establishes a deterministic screening mechanism that applies to all Tr
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.28;
 
 interface ISanctionsOracle {
-    function isSanctioned(address account) external view returns (bool);
-
     event AddressAdded(address indexed account);
     event AddressRemoved(address indexed account);
+
+    function isSanctioned(address account) external view returns (bool);
 }
 ```
 
@@ -58,15 +58,19 @@ interface ISanctionsOracle {
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.28;
 
-import {ISanctionsOracle} from "./ISanctionsOracle.sol";
+import {ISanctionsOracle} from "./interfaces/ISanctionsOracle.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract SanctionsOracle is ISanctionsOracle, AccessControl {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
     mapping(address => bool) private _sanctioned;
+
+    error AlreadySanctioned(address account);
+    error NotSanctioned(address account);
+    error ZeroAddress();
 
     constructor(address admin) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
@@ -77,12 +81,16 @@ contract SanctionsOracle is ISanctionsOracle, AccessControl {
         return _sanctioned[account];
     }
 
-    function addSanctioned(address account) external onlyRole(MANAGER_ROLE) {
+    function addAddress(address account) external onlyRole(MANAGER_ROLE) {
+        if (account == address(0)) revert ZeroAddress();
+        if (_sanctioned[account]) revert AlreadySanctioned(account);
         _sanctioned[account] = true;
         emit AddressAdded(account);
     }
 
-    function removeSanctioned(address account) external onlyRole(MANAGER_ROLE) {
+    function removeAddress(address account) external onlyRole(MANAGER_ROLE) {
+        if (account == address(0)) revert ZeroAddress();
+        if (!_sanctioned[account]) revert NotSanctioned(account);
         _sanctioned[account] = false;
         emit AddressRemoved(account);
     }
@@ -129,7 +137,7 @@ Both governance paths route through an Executor that checks the same SanctionsOr
 
 | Network | Contract | Address | Status |
 |---------|----------|---------|--------|
-| Mordor | SanctionsOracle | TBD | Pending deployment (Phase 1) |
+| Mordor | SanctionsOracle | TBD | Phase 2A complete (built, 14 tests) |
 
 ## Non-Goals
 
@@ -142,11 +150,20 @@ This ECIP explicitly does not:
 
 ## Test Suite Requirements
 
+### Phase 2A (14 tests — Complete)
+
+- Add/remove happy path + events (AddressAdded, AddressRemoved)
+- isSanctioned state transitions (false → true → false)
+- Custom error reverts: AlreadySanctioned, NotSanctioned, ZeroAddress
+- Access control: only MANAGER_ROLE can add/remove, admin can grant MANAGER_ROLE
+- Edge cases: non-sanctioned returns false, duplicate add reverts, remove non-sanctioned reverts
+
+### Phase 2B (Pending — Governor + Executor integration)
+
 - Sanctions at propose: reverts when recipient is sanctioned
 - Sanctions at cancel: `cancelIfSanctioned()` works for anyone
 - Sanctions at execute: Executor reverts, funds remain in Treasury
-- Oracle management: add/remove sanctioned addresses via governance
-- Edge cases: oracle returns false for non-sanctioned, oracle reverts → fail-closed
+- Edge cases: oracle reverts → fail-closed
 
 ## Verification
 
