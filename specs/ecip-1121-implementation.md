@@ -42,7 +42,6 @@ These EIPs are activated alongside ECIP-1111 (EIP-1559 + EIP-3198) in the same O
 |-----|-------------|----------------|
 | EIP-7934 | RLP execution block size limit | Block size safety |
 | EIP-6780 | SELFDESTRUCT restriction | Opcode modification |
-| ~~EIP-7642~~ | ~~History expiry and simplified receipts~~ | **REMOVING — see amendment below** |
 | EIP-7910 | eth_config JSON-RPC method | RPC interface |
 
 ### Cryptographic and Precompile Enhancements
@@ -93,11 +92,11 @@ Excluded because they depend on Proof-of-Stake / Beacon Chain:
 | EIP-6110 | Validator deposit handling |
 | EIP-7917 | Deterministic proposer lookahead |
 
-## Amendment: EIP-7642 Removal (ACTION REQUIRED)
+## Amendment: EIP-7642 Excluded
 
-**EIP-7642 (History expiry and simplified receipts) must be removed from ECIP-1121 before Mordor activation.** This EIP introduces incompatibilities with ETC's state management assumptions around receipt availability and historical data access. Removal must be coordinated across all 3 client implementations before block 15,800,850.
+EIP-7642 (eth/69 — history expiry and simplified receipts) is **excluded** from ECIP-1121. The published ECIP at [ethereumclassic/ECIPs](https://github.com/ethereumclassic/ECIPs) lists EIP-7642 in the Explicit Exclusions section — it removes total difficulty and bloom filters from receipts, and adds history expiry windows designed for post-Merge nodes. Not applicable to ETC's Proof-of-Work chain.
 
-**Status:** Pending removal. All 3 client branches must remove EIP-7642 handling and update fork configuration before Mordor activation (~March 28, 2026).
+All 3 client implementations must ensure EIP-7642 is not activated at the Olympia fork block.
 
 ## Relationship to ECIP-1111
 
