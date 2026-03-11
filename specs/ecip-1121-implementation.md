@@ -5,7 +5,7 @@ status: Implementation
 type: Meta
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-12-14
-updated: 2026-03-08
+updated: 2026-03-10
 license: CC0-1.0
 ---
 
@@ -42,7 +42,7 @@ These EIPs are activated alongside ECIP-1111 (EIP-1559 + EIP-3198) in the same O
 |-----|-------------|----------------|
 | EIP-7934 | RLP execution block size limit | Block size safety |
 | EIP-6780 | SELFDESTRUCT restriction | Opcode modification |
-| EIP-7642 | History expiry and simplified receipts | State management |
+| ~~EIP-7642~~ | ~~History expiry and simplified receipts~~ | **REMOVING — see amendment below** |
 | EIP-7910 | eth_config JSON-RPC method | RPC interface |
 
 ### Cryptographic and Precompile Enhancements
@@ -93,9 +93,11 @@ Excluded because they depend on Proof-of-Stake / Beacon Chain:
 | EIP-6110 | Validator deposit handling |
 | EIP-7917 | Deterministic proposer lookahead |
 
-## Amendment: EIP-7642 Review
+## Amendment: EIP-7642 Removal (ACTION REQUIRED)
 
-**Note:** EIP-7642 (History expiry and simplified receipts) should be reviewed before Olympia finalization. This EIP may need to be removed from the spec if it introduces incompatibilities with ETC's state management assumptions. All 3 client implementations should validate EIP-7642 behavior during Mordor testing.
+**EIP-7642 (History expiry and simplified receipts) must be removed from ECIP-1121 before Mordor activation.** This EIP introduces incompatibilities with ETC's state management assumptions around receipt availability and historical data access. Removal must be coordinated across all 3 client implementations before block 15,800,850.
+
+**Status:** Pending removal. All 3 client branches must remove EIP-7642 handling and update fork configuration before Mordor activation (~March 28, 2026).
 
 ## Relationship to ECIP-1111
 

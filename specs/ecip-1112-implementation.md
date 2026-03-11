@@ -7,7 +7,7 @@ category: Core
 requires: 1111
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-07-04
-updated: 2026-03-08
+updated: 2026-03-10
 license: CC0-1.0
 ---
 
@@ -138,14 +138,13 @@ All 3 client olympia branches have been updated:
 
 ## Deploy Script
 
+Demo v0.1 uses a single shared salt for deterministic same-address deployment across chains:
+
 ```solidity
 contract DeployScript is Script {
     function run() public {
-        // Versioned salt per network
-        bytes32 salt = keccak256(abi.encodePacked(
-            "OLYMPIA_TREASURY_",
-            block.chainid == 63 ? "MORDOR" : "MAINNET"
-        ));
+        // Demo v0.1: single salt for same address on Mordor + ETC mainnet
+        bytes32 salt = keccak256("OLYMPIA_DEMO_V0_1");
 
         uint48 adminDelay = 3 days; // governance-appropriate delay
 
@@ -158,6 +157,8 @@ contract DeployScript is Script {
     }
 }
 ```
+
+**Note:** Production deployments may use versioned per-network salts (e.g., `keccak256("OLYMPIA_TREASURY_MORDOR")`).
 
 ## Deterministic Deployment
 

@@ -7,7 +7,7 @@ category: ECBP
 requires: 1113
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-07-04
-updated: 2026-03-08
+updated: 2026-03-10
 license: CC0-1.0
 ---
 
@@ -104,7 +104,7 @@ contract ECFPRegistry {
 1. Submit     → ECFPRegistry.submit(ecfpId, recipient, amount, metadataCID)
 2. Draft      → Open for discussion; not yet eligible for voting
 3. Active     → Governor proposal created referencing hash-bound ID
-4. Voting     → Snapshot-block voting via IOlympiaVotingModule
+4. Voting     → Snapshot-block voting via GovernorVotes (reads OlympiaMemberNFT)
 5. Approved   → Queued in Timelock
 6. Executed   → Timelock → OlympiaExecutor → Treasury.withdraw()
 7. Completed  → Funds disbursed, ProposalExecuted event emitted
@@ -136,11 +136,13 @@ contract ECFPRegistry {
 
 | Network | Contract | Address | Status |
 |---------|----------|---------|--------|
-| Mordor | ECFPRegistry | TBD | Pending deployment (Phase 2) |
+| Mordor | ECFPRegistry | TBD | Phase 2B — pending (after Governor pipeline) |
 
 ## Implementation Status
 
-ECFPRegistry is Phase 2 of the development plan. Phase 1 (CoreDAO pipeline) must be operational before ECFP proposals can flow through the system.
+ECFPRegistry is part of Phase 2B of the development plan. Phase 2A (SanctionsOracle, OlympiaMemberNFT) is complete. The Governor pipeline (Phase 2B) must be operational before ECFP proposals can flow through the system.
+
+**Repo:** [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) — ECFPRegistry will be built here alongside the Governor and Executor contracts.
 
 ## Relationship to Other ECIPs
 

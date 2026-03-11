@@ -163,7 +163,7 @@ Phase 4: Admin Renouncement
 
 ### ECIP-1121: EVM Compatibility Sprint
 
-15 EIPs activated alongside ECIP-1111 in the same fork. These are independent of the fee market — they bring ETC's EVM to parity with Ethereum's latest capabilities.
+14 EIPs activated alongside ECIP-1111 in the same fork (EIP-7642 removed — see spec amendment). These are independent of the fee market — they bring ETC's EVM to parity with Ethereum's latest capabilities.
 
 **Key additions:**
 - **MCOPY** (EIP-5656): Efficient memory-to-memory copy

@@ -7,7 +7,7 @@ requires: 1112, 1116
 replaces: 1113
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-12-14
-updated: 2026-03-08
+updated: 2026-03-10
 license: CC0-1.0
 ---
 
@@ -80,7 +80,7 @@ Contract addresses will be updated at deployment. Production deployment occurs i
 | Conditional Market Factory | Deployed (prototype) | Deterministic market creation |
 | Privacy Layer | Not implemented | Phase 3 enhancement |
 | Minority Exit Mechanism | Not implemented | Phase 3 enhancement |
-| SanctionsOracle integration | Not implemented | Required before production |
+| SanctionsOracle integration | Pending | Oracle built (Phase 2A); FutarchyExecutor wiring needed |
 
 ## Economic Model
 
@@ -108,7 +108,7 @@ Same SanctionsOracle, same Executor pattern as CoreDAO:
 
 ## Test Suite (Existing)
 
-The Olympia Futarchy research repo at `/media/dev/2tb/dev/olympia-futarchy/prediction-dao-research/` has 1,345 tests covering:
+The [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) research repo has 1,345 tests covering:
 - Paired conditional market creation and settlement
 - LMSR pricing and bounded loss
 - Oracle resolution mechanics
