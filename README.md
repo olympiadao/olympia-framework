@@ -83,27 +83,28 @@ Olympia solves all four by building from the bottom up: first accumulate, then g
 
 ```
 Stage 1: COMPLETE ████████████████████ — 3 clients, treasury deployed
-Stage 2: IN PROGRESS ████████░░░░░░░░░░░░ — Phase 2A complete, 2B next
+Stage 2: DEPLOYED ████████████████░░░░ — All 7 contracts on Mordor, E2E tested
 Stage 3: RESEARCH ████░░░░░░░░░░░░░░░░ — 1,345 tests, contracts pending
 Stage 4: DEFERRED ░░░░░░░░░░░░░░░░░░░░ — Requires fee market data
 Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ — Requires Stage 4 data
 ```
 
 **Completed:**
-- Hard fork consensus code in 3 ETC clients (core-geth, besu-etc, fukuii) — all tests pass
+- Hard fork consensus code in 3 ETC clients (core-geth, besu, fukuii) — all tests pass
 - Treasury deployed on Mordor + ETC mainnet at `0xd6165...Fb0e37`
-- SanctionsOracle + OlympiaMemberNFT contracts built and tested (33 tests)
+- Full governance pipeline deployed on Mordor (7 contracts, 87 tests)
+- E2E governance lifecycle tested (ECFP-001 submitted, voted, queued, executed)
+- Governance dApp in active development (olympia-app)
 - Futarchy research complete (1,345 tests)
-- Brand assets, landing pages (olympiadao.org, olympiatreasury.org)
+- Brand assets, landing pages (olympiadao.org, olympiatreasury.org) live
 
 **In progress:**
 - Mordor activation at block 15,800,850 (~March 28, 2026)
-- Phase 2B: OlympiaGovernor, Timelock, Executor contracts
-- ECFPRegistry (ECIP-1114)
+- Governance dApp polish and deployment
 
 **Next milestones:**
-- Phase 2B contracts → deploy full governance pipeline on Mordor
-- End-to-end governance lifecycle test on Mordor
+- Mordor hard fork activation (~March 28, 2026)
+- Additional governance lifecycle tests (ECFP-002, 003, 004)
 - ETC mainnet activation at ~24,751,337 (~mid-June 2026)
 
 ---
@@ -177,7 +178,7 @@ Phase 4: Admin Renouncement
 
 **Excluded:** All blob/data availability EIPs (ETC has no blob layer), all PoS/Beacon Chain EIPs.
 
-**Client status:** All 3 clients (core-geth, besu-etc, fukuii) have complete implementations. All tests pass.
+**Client status:** All 3 clients (core-geth, besu, fukuii) have complete implementations. All tests pass.
 
 ---
 
@@ -336,14 +337,14 @@ Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution cu
 | ECIP | Title | Stage | Type | Status |
 |------|-------|-------|------|--------|
 | 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
-| 1112 | Treasury Contract | 1 | Contract | Demo deployed (Mordor + ETC mainnet) |
-| 1113 | CoreDAO Governance Framework | 2 | Contract | Foundation contracts complete (Demo v0.1) |
-| 1114 | ECFP Funding Proposals | 2 | Contract | ECFPRegistry pending |
+| 1112 | Treasury Contract | 1 | Contract | Deployed (Mordor + ETC mainnet) |
+| 1113 | CoreDAO Governance Framework | 2 | Contract | Deployed on Mordor (Demo v0.1) |
+| 1114 | ECFP Funding Proposals | 2 | Contract | Deployed on Mordor (Demo v0.1) |
 | 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
 | 1116 | Basefee Split (5%/95%) | 5 | Consensus | Deferred |
-| 1117 | Futarchy DAO | 3 | Contract | Prototype deployed |
+| 1117 | Futarchy DAO | 3 | Contract | Research complete |
 | 1118 | Streaming Disbursements | 3 | Contract | Phase 3 |
-| 1119 | Sanctions Constraint | 2 | Contract | SanctionsOracle complete (Demo v0.1) |
+| 1119 | Sanctions Constraint | 2 | Contract | Deployed on Mordor (Demo v0.1) |
 | 1121 | EVM Compatibility Sprint | 1 | Consensus | Implemented (3 clients) |
 | 1122 | Protocol-Native Miner Distribution | 5 | Consensus | Deferred |
 
@@ -369,22 +370,33 @@ All Demo v0.1 contracts use **Solidity 0.8.28**, **OpenZeppelin v5.6.0**, and **
 
 ## Deployment Addresses
 
+All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_1")`).
+
 | Contract | Phase | Mordor | ETC Mainnet |
 |----------|-------|--------|-------------|
 | OlympiaTreasury | 1 ✅ | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` |
-| SanctionsOracle | 2A ✅ | TBD (contract built, 14 tests) | TBD |
-| OlympiaMemberNFT | 2A ✅ | TBD (contract built, 19 tests) | TBD |
-| OlympiaGovernor | 2B | TBD | TBD |
-| OlympiaExecutor | 2B | TBD | TBD |
-| OlympiaTimelock | 2B | TBD | TBD |
-| ECFPRegistry | 2B | TBD | TBD |
+| OlympiaGovernor | 2B ✅ | `0xEdbD61F1cE825CF939beBB422F8C914a69826dDA` | TBD |
+| OlympiaExecutor | 2B ✅ | `0x94d4f74dDdE715Ed195B597A3434713690B14e97` | TBD |
+| TimelockController | 2B ✅ | `0x1E0fADee5540a77012f1944fcce58677fC087f6e` | TBD |
+| ECFPRegistry | 2B ✅ | `0xcB532fe70299D53Cc81B5F6365f56A108784d05d` | TBD |
+| SanctionsOracle | 2A ✅ | `0xEeeb33c8b7C936bD8e72A859a3e1F9cc8A26f3B4` | TBD |
+| OlympiaMemberNFT | 2A ✅ | `0x720676EBfe45DECfC43c8E9870C64413a2480EE0` | TBD |
 | Deployer | — | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
+
+### Governance Parameters (Mordor Demo v0.1)
+
+| Parameter | Value |
+|-----------|-------|
+| Voting Delay | 1 block (~13s) |
+| Voting Period | 100 blocks (~22 min) |
+| Quorum | 10% of NFT supply |
+| Late Quorum Extension | 50 blocks (~11 min) |
+| Timelock Delay | 3600s (1 hour) |
+| Proposal Threshold | 0 (any NFT holder) |
 
 ---
 
 ## What's Next
-
-The path from here to functional governance on Mordor:
 
 ### Phase 2A: Foundation Contracts ✅
 
@@ -393,47 +405,43 @@ The path from here to functional governance on Mordor:
    → 0xd6165F3aF4281037bce810621F62B43077Fb0e37 (Mordor + ETC mainnet)
    → All 3 client olympia branches updated with treasury address
 
-2. ✅ Build SanctionsOracle + OlympiaMemberNFT (33 tests, 14 + 19)
-   → olympia-governance-contracts repo
-   → ISanctionsOracle, IERC5192, IOlympiaVotingModule interfaces
+2. ✅ Build + deploy SanctionsOracle + OlympiaMemberNFT
+   → olympia-governance-contracts repo (87 tests)
 ```
 
-### Phase 2B: Governor Pipeline (next)
+### Phase 2B: Governor Pipeline ✅
 
 ```
-3. Build OlympiaGovernor (GovernorVotes + GovernorVotesQuorumFraction)
-4. Build OlympiaExecutor (treasury + timelock + sanctionsOracle)
-5. Build OlympiaTimelock (TimelockController)
-6. Build ECFPRegistry (ECIP-1114)
+3. ✅ Build + deploy OlympiaGovernor (GovernorVotes + GovernorVotesQuorumFraction)
+4. ✅ Build + deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
+5. ✅ Build + deploy TimelockController
+6. ✅ Build + deploy ECFPRegistry (ECIP-1114)
 ```
 
-### Phase 2C: Mordor Deployment
+### Phase 2C: Mordor Deployment ✅
 
 ```
-7. Deploy SanctionsOracle → Mordor
-8. Deploy OlympiaMemberNFT → Mordor
-9. Deploy OlympiaTimelock → Mordor
-10. Deploy OlympiaExecutor → Mordor
-11. Deploy OlympiaGovernor → Mordor
-12. Configure Timelock roles:
-    Governor = PROPOSER + CANCELLER
-    Executor = EXECUTOR
-13. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
+7.  ✅ All 7 contracts deployed on Mordor via CREATE2
+8.  ✅ Timelock roles configured (Governor = PROPOSER + CANCELLER, Executor = EXECUTOR)
+9.  ✅ WITHDRAWER_ROLE granted on Treasury to OlympiaExecutor
+10. ✅ All roles verified on-chain
 ```
 
-### Phase 2D: Governance Lifecycle Testing
+### Phase 2D: Governance Lifecycle Testing (in progress)
 
 ```
-14. Test full governance lifecycle on Mordor:
-    deposit → propose → vote → queue → timelock → execute → receive
+11. ✅ ECFP-001 submitted, voted (2 For votes), queued, executed
+12. Remaining: ECFP-002, 003, 004 (deferred for additional testing)
+13. Sanctions layer validation (propose/cancel/execute gates)
+```
 
-15. Validate sanctions at every layer:
-    propose (sanctioned → revert)
-    cancelIfSanctioned (mid-lifecycle)
-    execute (final gate)
+### Phase 3: Mordor Activation + Mainnet
 
-16. Deploy ECFPRegistry → Mordor
-17. Test ECFP proposal flow end-to-end
+```
+14. Mordor hard fork activation at block 15,800,850 (~March 28, 2026)
+15. Monitor governance pipeline through fork boundary
+16. ETC mainnet activation at ~24,751,337 (~mid-June 2026)
+17. Deploy Stage 2 contracts on ETC mainnet
 ```
 
 ---
@@ -485,7 +493,7 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 | Repo | Purpose | Stage | Status |
 |------|---------|-------|--------|
 | [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | Treasury vault — Solidity + Foundry tests (ECIP-1112) | 1 | Deployed (Mordor + ETC) |
-| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | SanctionsOracle, OlympiaMemberNFT, interfaces (ECIP-1113, 1119) | 2 | Phase 2A complete |
+| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | Governor, Executor, Timelock, ECFPRegistry, SanctionsOracle, MemberNFT (ECIP-1113, 1114, 1119) | 2 | Deployed on Mordor (87 tests) |
 | [degov](https://github.com/olympiadao/degov) | Original Governor prototype — superseded by olympia-governance-contracts | 2 | Archived |
 | [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) | Futarchy research + prediction market contracts (ECIP-1117, 1118) | 3 | Research complete |
 
@@ -493,9 +501,9 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 
 | Repo | Purpose | Status |
 |------|---------|--------|
-| [core-geth](https://github.com/chris-mercer/core-geth) | Go ETC client (`etc` + `olympia` branches) | Olympia implemented |
-| besu-etc | Java ETC client (`etc` + `olympia` branches) | Olympia implemented |
-| fukuii-client | Scala ETC client (`alpha` + `olympia` branches) | Olympia implemented |
+| [core-geth](https://github.com/ethereumclassic/core-geth) | Go ETC client (`olympia` branch) | Olympia implemented |
+| [besu](https://github.com/ethereumclassic/besu) | Java ETC client (`olympia` branch) | Olympia implemented |
+| [fukuii](https://github.com/ethereumclassic/fukuii) | Scala ETC client (`olympia` branch) | Olympia implemented |
 
 ### Web & Brand Repos
 
@@ -504,7 +512,7 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 | [olympia-brand](https://github.com/olympiadao/olympia-brand) | Logo SVGs, favicons, OG images, design tokens | Complete |
 | [olympiadao-org](https://github.com/olympiadao/olympiadao-org) | olympiadao.org — Next.js 16 landing page | Complete |
 | [olympiatreasury-org](https://github.com/olympiadao/olympiatreasury-org) | olympiatreasury.org — Next.js 16 landing page | Complete |
-| [olympia-app](https://github.com/olympiadao/olympia-app) | Governance dApp (future) | Placeholder |
+| [olympia-app](https://github.com/olympiadao/olympia-app) | Governance dApp — proposals, voting, treasury (Next.js 16) | Active development |
 
 ### External
 

@@ -71,9 +71,9 @@ olympia-framework/
 | olympiadao-org | olympiadao | olympiadao.org landing page |
 | olympiatreasury-org | olympiadao | olympiatreasury.org landing page |
 | olympia-app | olympiadao | Governance dApp (placeholder) |
-| core-geth | chris-mercer | Go ETC client (etc + olympia branches) |
-| besu-etc | etccooperative | Java ETC client (etc + olympia branches) |
-| fukuii-client | *(private)* | Scala ETC client (alpha + olympia branches) |
+| core-geth | ethereumclassic | Go ETC client (etc + olympia branches) |
+| besu | ethereumclassic | Java ETC client (etc + olympia branches) |
+| fukuii | ethereumclassic | Scala ETC client (alpha + olympia branches) |
 | ECIPs | ethereumclassic | Published ECIP specifications |
 
 ---
