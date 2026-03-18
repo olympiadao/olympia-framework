@@ -361,7 +361,7 @@ Production contracts will use **Solidity 0.8.28**, **OpenZeppelin v5.6.0** (requ
 
 ## Deployment Addresses
 
-Demo v0.2 (pre-production) contracts. Treasury deployed via CREATE (nonce-based), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`). Production addresses will differ — OZ 5.6 (Cancun) produces different bytecode than OZ 5.1 (Shanghai), resulting in different CREATE2 addresses.
+Demo v0.2 (pre-production) contracts. Treasury deployed via CREATE (nonce-based), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`). All production addresses will differ. Treasury (CREATE) changes because production uses a different deployer EOA with nonce 0. Governance contracts (CREATE2) change because OZ 5.6 (Cancun) produces different bytecode than OZ 5.1 (Shanghai). Both changes feed into `PrecomputeAddresses.s.sol`, which recomputes the entire address set — the new Treasury address and new Timelock address are constructor args to the Executor, so its CREATE2 address changes too.
 
 | Contract | Phase | Mordor | ETC Mainnet |
 |----------|-------|--------|-------------|
@@ -463,7 +463,7 @@ Demo v0.2 (pre-production) contracts. Treasury deployed via CREATE (nonce-based)
 |--------|---------|----------|------------|------------|
 | `demo_v0.1` | Historical snapshot | OZ 5.6 AccessControl, CREATE2 | OZ 5.1.0, CREATE2 | 5.6 (treasury), 5.1 (governance) |
 | `demo_v0.2` | Current demo deployment | Pure Solidity, CREATE | OZ 5.1.0 (Shanghai), CREATE2 | 5.1.0 (governance only) |
-| `main` | Production target (post-Olympia) | TBD | OZ 5.6.0 (Cancun) | 5.6.0 |
+| `main` | Production target (post-Olympia) | Pure Solidity, CREATE (new deployer EOA) | OZ 5.6.0 (Cancun), CREATE2 | 5.6.0 |
 
 Production deployment happens after Olympia activation (Mordor ~March 28, 2026; ETC mainnet ~June 2026). Production contracts require Cancun opcodes (MCOPY/EIP-5656) enabled by the Olympia fork itself.
 

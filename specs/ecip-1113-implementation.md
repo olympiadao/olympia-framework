@@ -434,7 +434,7 @@ cast call 0xB85dbc899472756470EF4033b9637ff8fa2FD23D "sanctionsOracle()" --rpc-u
 
 ## Production Notes
 
-Demo v0.2 deployed with OpenZeppelin v5.1.0 (Shanghai EVM compatible). Production deployment targets OZ v5.6.0 (requires Cancun opcodes via Olympia fork). Different OZ bytecode will produce different CREATE2 addresses.
+Demo v0.2 deployed with OpenZeppelin v5.1.0 (Shanghai EVM compatible). Production deployment targets OZ v5.6.0 (requires Cancun opcodes via Olympia fork). All production addresses differ: governance CREATE2 addresses change (OZ 5.6 bytecode), and the Treasury CREATE address changes (different deployer EOA, nonce 0). The Executor CREATE2 address is affected by both — its constructor args include the Treasury address and TimelockController address, both of which change. `PrecomputeAddresses.s.sol` recomputes the full address set before deployment.
 
 ## Copyright
 

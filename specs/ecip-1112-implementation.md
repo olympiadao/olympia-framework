@@ -196,7 +196,7 @@ cast code 0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf --rpc-url $MORDOR_RPC_URL
 
 ## Production Notes
 
-Demo v0.2 uses pure Solidity with an immutable executor. Production deployment will use the same architecture — recompiled against OZ 5.6.0 (Cancun EVM) for the governance contracts. Treasury remains pure Solidity.
+Demo v0.2 uses pure Solidity with an immutable executor. Production deployment uses the same architecture — recompiled against OZ 5.6.0 (Cancun EVM) for the governance contracts. Treasury remains pure Solidity (identical bytecode). All production addresses differ: the Treasury CREATE address changes because production uses a different deployer EOA (fresh, nonce 0). The Executor CREATE2 address changes because its initcode includes the new Treasury address and the new TimelockController address (OZ 5.6 bytecode) as constructor args. Both addresses are recomputed together by `PrecomputeAddresses.s.sol` in the governance repo before either contract is deployed.
 
 ## Copyright
 
