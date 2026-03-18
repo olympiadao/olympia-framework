@@ -14,7 +14,7 @@ Olympia is a framework for sustainable protocol funding on Ethereum Classic. It 
 
 The framework is designed as a **staged rollout** — each stage addresses a specific concern and unlocks the next. Nothing is optional; each layer builds on the operational reality of the previous one.
 
-**Core thesis:** ETC's block rewards decline every 5 million blocks (ECIP-1017). Fee revenue is currently negligible. As block rewards drop, the network needs a mechanism to fund core development, critical infrastructure, and security incentives. Olympia provides that mechanism without changing the emission schedule or monetary policy.
+**Core thesis:** ETC's block rewards decline every 5 million blocks ([ECIP-1017](https://ecips.ethereumclassic.org/ECIPs/ecip-1017)). Fee revenue is currently negligible. As block rewards drop, the network needs a mechanism to fund core development, critical infrastructure, and security incentives. Olympia provides that mechanism without changing the emission schedule or monetary policy.
 
 ---
 
@@ -83,7 +83,7 @@ Olympia solves all four by building from the bottom up: first accumulate, then g
 
 ```
 Stage 1: COMPLETE ████████████████████ — 3 clients, treasury deployed
-Stage 2: DEPLOYED ████████████████░░░░ — All 7 contracts on Mordor, E2E tested
+Stage 2: DEPLOYED ████████████████░░░░ — All 7 contracts on Mordor + ETC, E2E tested
 Stage 3: RESEARCH ████░░░░░░░░░░░░░░░░ — 1,345 tests, contracts pending
 Stage 4: DEFERRED ░░░░░░░░░░░░░░░░░░░░ — Requires fee market data
 Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ — Requires Stage 4 data
@@ -91,12 +91,12 @@ Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ �
 
 **Completed:**
 - Hard fork consensus code in 3 ETC clients (core-geth, besu, fukuii) — all tests pass
-- Treasury deployed on Mordor + ETC mainnet at `0xd6165...Fb0e37`
-- Full governance pipeline deployed on Mordor (7 contracts, 87 tests)
+- Treasury deployed on Mordor + ETC mainnet at `0x035b2e3c...871bf`
+- Full governance pipeline deployed on Mordor + ETC mainnet (7 contracts, 106 governance tests + 33 treasury tests)
 - E2E governance lifecycle tested (ECFP-001 submitted, voted, queued, executed)
 - Governance dApp in active development (olympia-app)
 - Futarchy research complete (1,345 tests)
-- Brand assets, landing pages (olympiadao.org, olympiatreasury.org) live
+- Brand assets, landing pages (olympiadao.org, olympiatreasury.org, ethereumclassicdao.org) live
 
 **In progress:**
 - Mordor activation at block 15,800,850 (~March 28, 2026)
@@ -111,7 +111,7 @@ Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ �
 
 ## Stage 1: Olympia Hard Fork
 
-**ECIPs:** 1111, 1112, 1121
+**ECIPs:** [1111](https://ecips.ethereumclassic.org/ECIPs/ecip-1111), [1112](https://ecips.ethereumclassic.org/ECIPs/ecip-1112), [1121](https://ecips.ethereumclassic.org/ECIPs/ecip-1121)
 **Type:** Consensus layer (hard fork)
 **Activation:** Mordor block 15,800,850, ETC mainnet ~24,751,337
 
@@ -134,37 +134,28 @@ EIP-3198 provides the `BASEFEE` opcode (0x48) so smart contracts can read the cu
 
 ### ECIP-1112: Olympia Treasury
 
-An immutable vault contract deployed via CREATE2 at a deterministic address. The Treasury:
+A pure Solidity immutable vault contract. The Treasury:
 
 - Receives basefee via consensus state credit
 - Also accepts voluntary donations (ETC Coop, Grayscale, third parties)
-- Permits withdrawals only through role-gated access control (`WITHDRAWER_ROLE`)
-- Contains zero governance logic — it is a minimal vault
+- Permits withdrawals only through a single authorized caller (`immutable executor`)
+- Contains zero governance logic — it is a minimal vault (49 lines, no external dependencies)
 
-The Treasury uses OpenZeppelin's `AccessControlDefaultAdminRules` (v5.6) for staged governance activation:
+The Treasury uses an immutable executor pattern — the executor address is fixed at construction time. No admin transfer, no role management, no renouncement phase. The contract is immutable from deployment.
 
 ```
-Phase 1: Bootstrap
-  DEFAULT_ADMIN_ROLE → deployer EOA
-  WITHDRAWER_ROLE → deployer EOA
-  Treasury accumulates, no withdrawals
-
-Phase 2: CoreDAO Activation
-  WITHDRAWER_ROLE → OlympiaExecutor
-  DEFAULT_ADMIN_ROLE → CoreDAO governance (2-step transfer with delay)
-
-Phase 3: Futarchy Integration
-  Additional WITHDRAWER_ROLE → FutarchyExecutor
-
-Phase 4: Admin Renouncement
-  Admin renounced → immutable vault, no further role changes
+Treasury (CREATE, immutable executor)
+    ↓ only executor can withdraw
+OlympiaExecutor (CREATE2, governance pipeline)
+    ↓ authorized by Timelock
+OlympiaGovernor → Timelock → Executor → Treasury.withdraw()
 ```
 
-**Deployment:** Demo v0.1 deployed at `0xd6165F3aF4281037bce810621F62B43077Fb0e37` on both Mordor and ETC mainnet via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_1")`). Client branches updated with the Treasury address.
+**Deployment:** Demo v0.2 deployed at `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` on both Mordor and ETC mainnet via CREATE (deployer `0x7C3311...`, nonce 0). Executor address pre-computed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`). Client branches updated with the Treasury address.
 
 ### ECIP-1121: EVM Compatibility Sprint
 
-13 EIPs activated alongside ECIP-1111 in the same fork. These are independent of the fee market — they bring ETC's EVM to parity with Ethereum's latest capabilities. (EIP-7642 excluded per published ECIP — not applicable to PoW chain.)
+13 EIPs activated alongside [ECIP-1111](https://ecips.ethereumclassic.org/ECIPs/ecip-1111) in the same fork. These are independent of the fee market — they bring ETC's EVM to parity with Ethereum's latest capabilities. (EIP-7642 excluded per published ECIP — not applicable to PoW chain.)
 
 **Key additions:**
 - **MCOPY** (EIP-5656): Efficient memory-to-memory copy
@@ -184,7 +175,7 @@ Phase 4: Admin Renouncement
 
 ## Stage 2: CoreDAO Governance
 
-**ECIPs:** 1113, 1114, 1119
+**ECIPs:** [1113](https://ecips.ethereumclassic.org/ECIPs/ecip-1113), [1114](https://ecips.ethereumclassic.org/ECIPs/ecip-1114), [1119](https://ecips.ethereumclassic.org/ECIPs/ecip-1119)
 **Type:** Contract layer (no fork required)
 
 Stage 2 transitions the Treasury from "accumulate only" to "functional withdrawals." This is the traditional DAO pipeline — not concerned with decentralization off the bat, focused on funding core development and critical infrastructure transparently.
@@ -205,11 +196,11 @@ OlympiaMemberNFT (soulbound ERC721Votes)
 
 1. **No governance token.** Olympia launches with soulbound NFT-based membership voting — no token distribution, no bootstrapping problem. Any future tokenization must go through an OIP (Olympia Improvement Proposal). One soulbound NFT = one vote. KYC/BrightID/Gitcoin Passport-verified accounts receive a non-transferable NFT via `MINTER_ROLE`.
 
-2. **Standard OZ voting (Demo v0.1).** The Governor uses OZ `GovernorVotes` + `GovernorVotesQuorumFraction`, reading `getPastVotes()` directly from the soulbound `OlympiaMemberNFT`. No custom `_getVotes()` override, no adapter contract. The `IOlympiaVotingModule` interface is included as a forward-looking spec artifact for governance-gated module swaps in future releases.
+2. **Standard OZ voting (Demo v0.2).** The Governor uses OZ `GovernorVotes` + `GovernorVotesQuorumFraction`, reading `getPastVotes()` directly from the soulbound `OlympiaMemberNFT`. No custom `_getVotes()` override, no adapter contract. Demo v0.2 additions: `GovernorPreventLateQuorum`, `GovernorStorage`, custom errors (`SanctionedRecipient`, `NoSanctionedRecipients`), assembly calldata decoding in sanctions helpers. The `IOlympiaVotingModule` interface is included as a forward-looking spec artifact for governance-gated module swaps in future releases.
 
 3. **Soulbound enforcement.** `OlympiaMemberNFT` blocks transfers in `_update()` (allows mint/burn only). Implements ERC5192 `locked()` interface. Auto-delegates on mint via `_delegate(to, to)` so votes are active immediately. Uses OZ default block number clock mode.
 
-4. **OlympiaExecutor.** A thin contract sitting between Timelock and Treasury. Holds `WITHDRAWER_ROLE`, checks the SanctionsOracle before every `Treasury.withdraw()` call. Immutable references to treasury, timelock, and sanctions oracle.
+4. **OlympiaExecutor.** A thin contract sitting between Timelock and Treasury. Checks the SanctionsOracle before every `Treasury.withdraw()` call. Immutable references to treasury, timelock, and sanctions oracle.
 
 5. **Self-upgrade via OIP.** The Governor exposes `updateSanctionsOracle()` and governance parameter setters — all gated by `onlyGovernance`. The system can evolve without redeployment.
 
@@ -243,7 +234,7 @@ The `SanctionsOracle` is a governance-managed blocklist: `addAddress(address)` a
 
 ## Stage 3: Futarchy DAO
 
-**ECIPs:** 1117, 1118
+**ECIPs:** [1117](https://ecips.ethereumclassic.org/ECIPs/ecip-1117), [1118](https://ecips.ethereumclassic.org/ECIPs/ecip-1118)
 **Type:** Contract layer
 
 Once CoreDAO handles mandatory operational needs (Stage 2), Stage 3 opens a platform for contentious or experimental proposals. Built to amplify on-chain transactions — a positive flywheel inside the governance system itself.
@@ -284,7 +275,7 @@ Milestone-gated streaming for approved proposals. Funds release incrementally, n
 
 ## Stage 4: Miner Distribution Experimentation
 
-**ECIP:** 1115
+**ECIP:** [1115](https://ecips.ethereumclassic.org/ECIPs/ecip-1115)
 **Type:** Contract layer
 
 Miners still have block rewards and fees are currently negligible. This stage matters most once the fee market is relevant — after Olympia activates and Type-2 transactions generate real basefee data.
@@ -312,7 +303,7 @@ The `SmoothingModule` computes intended allocations. The `MinerRewardModule` map
 
 ## Stage 5: Protocol Hardcode
 
-**ECIPs:** 1116, 1122
+**ECIPs:** [1116](https://ecips.ethereumclassic.org/ECIPs/ecip-1116), [1122](https://ecips.ethereumclassic.org/ECIPs/ecip-1122)
 **Type:** Consensus layer (second hard fork)
 
 Only proceeds after Stage 4 produces empirical data validating which parameters are appropriate for protocol embedding. Too risky to hardcode without ironing out variables first.
@@ -328,7 +319,7 @@ BlockProducerPortion = TotalBaseFee − TreasuryPortion
 
 ### ECIP-1122: Protocol-Native Miner Distribution
 
-Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution curve at consensus — the pattern that Stage 4 experimentation proved optimal. Paired with ECIP-1116 in the same second hard fork.
+Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution curve at consensus — the pattern that Stage 4 experimentation proved optimal. Paired with [ECIP-1116](https://ecips.ethereumclassic.org/ECIPs/ecip-1116) in the same second hard fork.
 
 ---
 
@@ -336,17 +327,17 @@ Supersedes ECIP-1120 (istora, original author). Embeds the miner distribution cu
 
 | ECIP | Title | Stage | Type | Status |
 |------|-------|-------|------|--------|
-| 1111 | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
-| 1112 | Treasury Contract | 1 | Contract | Deployed (Mordor + ETC mainnet) |
-| 1113 | CoreDAO Governance Framework | 2 | Contract | Deployed on Mordor (Demo v0.1) |
-| 1114 | ECFP Funding Proposals | 2 | Contract | Deployed on Mordor (Demo v0.1) |
-| 1115 | L-Curve Smoothing | 4 | Contract | Phase 4 |
-| 1116 | Basefee Split (5%/95%) | 5 | Consensus | Deferred |
-| 1117 | Futarchy DAO | 3 | Contract | Research complete |
-| 1118 | Streaming Disbursements | 3 | Contract | Phase 3 |
-| 1119 | Sanctions Constraint | 2 | Contract | Deployed on Mordor (Demo v0.1) |
-| 1121 | EVM Compatibility Sprint | 1 | Consensus | Implemented (3 clients) |
-| 1122 | Protocol-Native Miner Distribution | 5 | Consensus | Deferred |
+| [1111](https://ecips.ethereumclassic.org/ECIPs/ecip-1111) | EIP-1559 + EIP-3198 | 1 | Consensus | Implemented (3 clients) |
+| [1112](https://ecips.ethereumclassic.org/ECIPs/ecip-1112) | Treasury Contract | 1 | Contract | Deployed (Mordor + ETC mainnet) |
+| [1113](https://ecips.ethereumclassic.org/ECIPs/ecip-1113) | CoreDAO Governance Framework | 2 | Contract | Deployed (Demo v0.2, Mordor + ETC) |
+| [1114](https://ecips.ethereumclassic.org/ECIPs/ecip-1114) | ECFP Funding Proposals | 2 | Contract | Deployed (Demo v0.2, Mordor + ETC) |
+| [1115](https://ecips.ethereumclassic.org/ECIPs/ecip-1115) | L-Curve Smoothing | 4 | Contract | Phase 4 |
+| [1116](https://ecips.ethereumclassic.org/ECIPs/ecip-1116) | Basefee Split (5%/95%) | 5 | Consensus | Deferred |
+| [1117](https://ecips.ethereumclassic.org/ECIPs/ecip-1117) | Futarchy DAO | 3 | Contract | Research complete |
+| [1118](https://ecips.ethereumclassic.org/ECIPs/ecip-1118) | Streaming Disbursements | 3 | Contract | Phase 3 |
+| [1119](https://ecips.ethereumclassic.org/ECIPs/ecip-1119) | Sanctions Constraint | 2 | Contract | Deployed (Demo v0.2, Mordor + ETC) |
+| [1121](https://ecips.ethereumclassic.org/ECIPs/ecip-1121) | EVM Compatibility Sprint | 1 | Consensus | Implemented (3 clients) |
+| [1122](https://ecips.ethereumclassic.org/ECIPs/ecip-1122) | Protocol-Native Miner Distribution | 5 | Consensus | Deferred |
 
 ---
 
@@ -366,24 +357,24 @@ Cross-client verification completed via six-client audit (March 2026). All conse
 
 ## Contract Stack
 
-All Demo v0.1 contracts use **Solidity 0.8.28**, **OpenZeppelin v5.6.0**, and **Foundry** for build/test/deploy.
+Demo v0.2 governance contracts use **Solidity 0.8.28**, **OpenZeppelin v5.1.0**, and **Foundry**. Treasury is pure Solidity (no OpenZeppelin dependency).
 
 ## Deployment Addresses
 
-All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_1")`).
+Demo v0.2 contracts. Treasury deployed via CREATE (nonce-based), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`).
 
 | Contract | Phase | Mordor | ETC Mainnet |
 |----------|-------|--------|-------------|
-| OlympiaTreasury | 1 ✅ | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` |
-| OlympiaGovernor | 2B ✅ | `0xEdbD61F1cE825CF939beBB422F8C914a69826dDA` | TBD |
-| OlympiaExecutor | 2B ✅ | `0x94d4f74dDdE715Ed195B597A3434713690B14e97` | TBD |
-| TimelockController | 2B ✅ | `0x1E0fADee5540a77012f1944fcce58677fC087f6e` | TBD |
-| ECFPRegistry | 2B ✅ | `0xcB532fe70299D53Cc81B5F6365f56A108784d05d` | TBD |
-| SanctionsOracle | 2A ✅ | `0xEeeb33c8b7C936bD8e72A859a3e1F9cc8A26f3B4` | TBD |
-| OlympiaMemberNFT | 2A ✅ | `0x720676EBfe45DECfC43c8E9870C64413a2480EE0` | TBD |
-| Deployer | — | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` | — |
+| OlympiaTreasury | 1 ✅ | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` |
+| OlympiaGovernor | 2B ✅ | `0xB85dbc899472756470EF4033b9637ff8fa2FD23D` | `0xB85dbc899472756470EF4033b9637ff8fa2FD23D` |
+| OlympiaExecutor | 2B ✅ | `0x64624f74F77639CbA268a6c8bEDC2778B707eF9a` | `0x64624f74F77639CbA268a6c8bEDC2778B707eF9a` |
+| TimelockController | 2B ✅ | `0xA5839b3e9445f7eE7AffdBC796DC0601f9b976C2` | `0xA5839b3e9445f7eE7AffdBC796DC0601f9b976C2` |
+| ECFPRegistry | 2B ✅ | `0xFB4De5674a6b9a301d16876795a74f3bdacfa722` | `0xFB4De5674a6b9a301d16876795a74f3bdacfa722` |
+| SanctionsOracle | 2A ✅ | `0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709` | `0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709` |
+| OlympiaMemberNFT | 2A ✅ | `0x73e78d3a3470396325b975FcAFA8105A89A9E672` | `0x73e78d3a3470396325b975FcAFA8105A89A9E672` |
+| Deployer | — | `0x7C3311F29e318617fed0833E68D6522948AaE995` | `0x7C3311F29e318617fed0833E68D6522948AaE995` |
 
-### Governance Parameters (Mordor Demo v0.1)
+### Governance Parameters (Mordor Demo v0.2)
 
 | Parameter | Value |
 |-----------|-------|
@@ -393,6 +384,7 @@ All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_
 | Late Quorum Extension | 50 blocks (~11 min) |
 | Timelock Delay | 3600s (1 hour) |
 | Proposal Threshold | 0 (any NFT holder) |
+| Min Review Period | 300s (5 min) |
 
 ---
 
@@ -401,29 +393,30 @@ All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_
 ### Phase 2A: Foundation Contracts ✅
 
 ```
-1. ✅ Deploy OlympiaTreasury (AccessControlDefaultAdminRules, OZ v5.6)
-   → 0xd6165F3aF4281037bce810621F62B43077Fb0e37 (Mordor + ETC mainnet)
+1. ✅ Deploy OlympiaTreasury (pure Solidity, immutable executor)
+   → 0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf (Mordor + ETC mainnet)
+   → Deployer 0x7C3311... (fresh EOA, nonce 0), CREATE deploy
    → All 3 client olympia branches updated with treasury address
 
 2. ✅ Build + deploy SanctionsOracle + OlympiaMemberNFT
-   → olympia-governance-contracts repo (87 tests)
+   → olympia-governance-contracts repo (106 tests)
 ```
 
 ### Phase 2B: Governor Pipeline ✅
 
 ```
-3. ✅ Build + deploy OlympiaGovernor (GovernorVotes + GovernorVotesQuorumFraction)
+3. ✅ Build + deploy OlympiaGovernor (GovernorVotes + GovernorVotesQuorumFraction + GovernorPreventLateQuorum + GovernorStorage)
 4. ✅ Build + deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
 5. ✅ Build + deploy TimelockController
 6. ✅ Build + deploy ECFPRegistry (ECIP-1114)
 ```
 
-### Phase 2C: Mordor Deployment ✅
+### Phase 2C: Deployment ✅
 
 ```
-7.  ✅ All 7 contracts deployed on Mordor via CREATE2
+7.  ✅ All 7 contracts deployed on Mordor + ETC mainnet
 8.  ✅ Timelock roles configured (Governor = PROPOSER + CANCELLER, Executor = EXECUTOR)
-9.  ✅ WITHDRAWER_ROLE granted on Treasury to OlympiaExecutor
+9.  ✅ Executor is Treasury's immutable authorized caller
 10. ✅ All roles verified on-chain
 ```
 
@@ -431,17 +424,17 @@ All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_
 
 ```
 11. ✅ ECFP-001 submitted, voted (2 For votes), queued, executed
-12. Remaining: ECFP-002, 003, 004 (deferred for additional testing)
-13. Sanctions layer validation (propose/cancel/execute gates)
+12. ✅ ECFP-002 submitted, voted against, rejected
+13. ✅ ECFP-003 submitted, sanctions-blocked (3-layer defense validated)
+14. Remaining: additional lifecycle edge cases
 ```
 
 ### Phase 3: Mordor Activation + Mainnet
 
 ```
-14. Mordor hard fork activation at block 15,800,850 (~March 28, 2026)
-15. Monitor governance pipeline through fork boundary
-16. ETC mainnet activation at ~24,751,337 (~mid-June 2026)
-17. Deploy Stage 2 contracts on ETC mainnet
+15. Mordor hard fork activation at block 15,800,850 (~March 28, 2026)
+16. Monitor governance pipeline through fork boundary
+17. ETC mainnet activation at ~24,751,337 (~mid-June 2026)
 ```
 
 ---
@@ -450,17 +443,27 @@ All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_
 
 1. **Accumulate first, govern later.** The Treasury starts as a receive-only vault. Governance matures separately. No withdrawals until the governance pipeline is battle-tested.
 
-2. **Contract before consensus.** Experiment with parameters at the contract layer (adjustable via OIP) before embedding them at the consensus layer (requires a hard fork). This applies to fee splits (ECIP-1116) and miner distribution (ECIP-1122).
+2. **Contract before consensus.** Experiment with parameters at the contract layer (adjustable via OIP) before embedding them at the consensus layer (requires a hard fork). This applies to fee splits ([ECIP-1116](https://ecips.ethereumclassic.org/ECIPs/ecip-1116)) and miner distribution ([ECIP-1122](https://ecips.ethereumclassic.org/ECIPs/ecip-1122)).
 
 3. **Layered defense.** Sanctions checking at three points (propose, cancel, execute) ensures no single failure mode bypasses screening. The execution-time check is the security invariant.
 
-4. **Forward-looking modularity.** The `IOlympiaVotingModule` interface is spec'd as a design artifact for future governance-gated voting module swaps. Demo v0.1 uses standard OZ `GovernorVotes` directly. The interface will be wired in when module swapping is needed.
+4. **Forward-looking modularity.** The `IOlympiaVotingModule` interface is spec'd as a design artifact for future governance-gated voting module swaps. Demo v0.2 uses standard OZ `GovernorVotes` directly. The interface will be wired in when module swapping is needed.
 
-5. **Staged governance lifecycle.** The Treasury admin progresses from deployer EOA → CoreDAO governance → admin renounced. `AccessControlDefaultAdminRules` provides 2-step transfers with mandatory delay at each transition.
+5. **Immutable from deployment.** The Treasury is immutable from deployment. The executor address is fixed at construction time. No admin transfer, no role management, no renouncement phase.
 
 6. **Empirical before dogmatic.** Phase 4 (L-curve experimentation) exists because we don't know the right basefee split or miner distribution curve. The answer comes from data, not from committee preference. Phase 5 only proceeds after Phase 4 validates the model.
 
 7. **Miner-first economics.** Olympia does not compete with miners. Block rewards and priority fees are untouched. The basefee redirect adds ~1 gwei/tx at current volumes — negligible relative to the 2.048 ETC block reward. The basefee and tips are additive, not competitive.
+
+---
+
+## Branch Strategy
+
+| Branch | Purpose | Treasury | Governance | OZ Version |
+|--------|---------|----------|------------|------------|
+| `demo_v0.1` | Historical snapshot | OZ 5.6 AccessControl, CREATE2 | OZ 5.1.0, CREATE2 | 5.6 (treasury), 5.1 (governance) |
+| `demo_v0.2` | Current demo deployment | Pure Solidity, CREATE | OZ 5.1.0 (Shanghai), CREATE2 | 5.1.0 (governance only) |
+| `main` | Production target | TBD (post-Olympia) | OZ 5.6.0 (Cancun) | 5.6.0 |
 
 ---
 
@@ -492,8 +495,8 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 
 | Repo | Purpose | Stage | Status |
 |------|---------|-------|--------|
-| [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | Treasury vault — Solidity + Foundry tests (ECIP-1112) | 1 | Deployed (Mordor + ETC) |
-| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | Governor, Executor, Timelock, ECFPRegistry, SanctionsOracle, MemberNFT (ECIP-1113, 1114, 1119) | 2 | Deployed on Mordor (87 tests) |
+| [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | Treasury vault — pure Solidity, immutable executor (ECIP-1112) | 1 | Deployed (Mordor + ETC) |
+| [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | Governor, Executor, Timelock, ECFPRegistry, SanctionsOracle, MemberNFT (ECIP-1113, 1114, 1119) | 2 | Deployed (Mordor + ETC, 106 tests) |
 | [degov](https://github.com/olympiadao/degov) | Original Governor prototype — superseded by olympia-governance-contracts | 2 | Archived |
 | [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) | Futarchy research + prediction market contracts (ECIP-1117, 1118) | 3 | Research complete |
 
@@ -512,6 +515,7 @@ Each spec includes contract interfaces, deployment details, gap analysis against
 | [olympia-brand](https://github.com/olympiadao/olympia-brand) | Logo SVGs, favicons, OG images, design tokens | Complete |
 | [olympiadao-org](https://github.com/olympiadao/olympiadao-org) | olympiadao.org — Next.js 16 landing page | Complete |
 | [olympiatreasury-org](https://github.com/olympiadao/olympiatreasury-org) | olympiatreasury.org — Next.js 16 landing page | Complete |
+| [ethereumclassicdao-org](https://github.com/olympiadao/ethereumclassicdao-org) | ethereumclassicdao.org — Next.js 16 multi-page site | Complete |
 | [olympia-app](https://github.com/olympiadao/olympia-app) | Governance dApp — proposals, voting, treasury (Next.js 16) | Active development |
 
 ### External

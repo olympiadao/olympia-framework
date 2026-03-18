@@ -7,7 +7,7 @@ category: ECBP
 requires: 1112
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-07-04
-updated: 2026-03-11
+updated: 2026-03-18
 license: CC0-1.0
 ---
 
@@ -15,9 +15,9 @@ license: CC0-1.0
 
 ## Overview
 
-ECIP-1113 defines the on-chain governance framework for Olympia DAO — the contract suite that authorizes and schedules execution of approved actions affecting the Olympia Treasury (ECIP-1112). The DAO provides a modular Governor, voting mechanism, timelock executor, and sanctions integration. The DAO's authorized execution path is the only route through which Treasury withdrawals can occur.
+ECIP-1113 defines the on-chain governance framework for Olympia DAO — the contract suite that authorizes and schedules execution of approved actions affecting the Olympia Treasury ([ECIP-1112](https://ecips.ethereumclassic.org/ECIPs/ecip-1112)). The DAO provides a modular Governor, voting mechanism, timelock executor, and sanctions integration. The DAO's authorized execution path is the only route through which Treasury withdrawals can occur.
 
-Governance-layer upgrades follow the Olympia Improvement Proposal (OIP) process. Treasury disbursements are handled through the ECFP workflow (ECIP-1114).
+Governance-layer upgrades follow the Olympia Improvement Proposal (OIP) process. Treasury disbursements are handled through the ECFP workflow ([ECIP-1114](https://ecips.ethereumclassic.org/ECIPs/ecip-1114)).
 
 Olympia launches **without a governance token**. Any future tokenization proposal must proceed through OIP.
 
@@ -27,12 +27,12 @@ Olympia launches **without a governance token**. Any future tokenization proposa
 
 **Draft spec language:** "Sybil-resistant, ETC-domain-restricted, one-address-one-vote model" with external modules for uniqueness/eligibility.
 
-**Implementation (Demo v0.1):** Soulbound `OlympiaMemberNFT` (ERC721 + ERC721Votes + ERC5192) read directly by standard OZ `GovernorVotes` + `GovernorVotesQuorumFraction`. One soulbound NFT = one vote. KYC/BrightID/Gitcoin Passport-verified accounts receive a non-transferable NFT via `MINTER_ROLE`. No custom `_getVotes()` override, no adapter contract.
+**Implementation (Demo v0.2):** Soulbound `OlympiaMemberNFT` (ERC721 + ERC721Votes + ERC5192) read directly by standard OZ `GovernorVotes` + `GovernorVotesQuorumFraction`. One soulbound NFT = one vote. KYC/BrightID/Gitcoin Passport-verified accounts receive a non-transferable NFT via `MINTER_ROLE`. No custom `_getVotes()` override, no adapter contract.
 
-**Forward-looking:** The `IOlympiaVotingModule` interface is included as a spec artifact for future governance-gated module swaps. It is not wired into the Demo v0.1 Governor.
+**Forward-looking:** The `IOlympiaVotingModule` interface is included as a spec artifact for future governance-gated module swaps. It is not wired into the Demo v0.2 Governor.
 
 ```solidity
-// Forward-looking interface (not used in Demo v0.1)
+// Forward-looking interface (not used in Demo v0.2)
 interface IOlympiaVotingModule {
     function votingPower(address account, uint256 timepoint) external view returns (uint256);
     function isEligible(address account, uint256 timepoint) external view returns (bool);
@@ -50,15 +50,15 @@ interface IOlympiaVotingModule {
 
 **Draft spec language:** "sole authorized caller of Treasury withdrawal functions" that "receives operations from the Timelock."
 
-**Implementation:** `OlympiaExecutor` — a thin contract that sits between Timelock and Treasury, holds `WITHDRAWER_ROLE` on the Treasury, and checks `SanctionsOracle` (ECIP-1119) before every withdrawal.
+**Implementation:** `OlympiaExecutor` — a thin contract that sits between Timelock and Treasury. It is the Treasury's immutable authorized caller and checks `SanctionsOracle` ([ECIP-1119](https://ecips.ethereumclassic.org/ECIPs/ecip-1119)) before every withdrawal.
 
-**Rationale:** The draft spec's Executor is a passthrough. The implementation adds the sanctions check as a mandatory pre-execution gate (ECIP-1119 requirement). This is the single point where sanctions enforcement occurs at the execution layer — complementing early checks at `propose()` and mid-lifecycle `cancelIfSanctioned()`.
+**Rationale:** The draft spec's Executor is a passthrough. The implementation adds the sanctions check as a mandatory pre-execution gate ([ECIP-1119](https://ecips.ethereumclassic.org/ECIPs/ecip-1119) requirement). This is the single point where sanctions enforcement occurs at the execution layer — complementing early checks at `propose()` and mid-lifecycle `cancelIfSanctioned()`.
 
-### 3. Governor — Standard OZ GovernorVotes (Demo v0.1)
+### 3. Governor — Standard OZ GovernorVotes (Demo v0.2)
 
 **Draft spec language:** "Governor module SHALL implement governance behavior functionally equivalent to the audited OpenZeppelin Governor model."
 
-**Implementation (Demo v0.1):** Extends OZ `Governor`, `GovernorSettings`, `GovernorCountingSimple`, `GovernorVotes`, `GovernorVotesQuorumFraction`, `GovernorTimelockControl`. Standard `GovernorVotes` reads `getPastVotes()` directly from the soulbound `OlympiaMemberNFT` (which implements `ERC721Votes`). No custom `_getVotes()` override needed. Bravo-style quorum (only "For" votes count toward quorum).
+**Implementation (Demo v0.2):** Extends OZ `Governor`, `GovernorSettings`, `GovernorCountingSimple`, `GovernorVotes`, `GovernorVotesQuorumFraction`, `GovernorTimelockControl`, `GovernorPreventLateQuorum`, `GovernorStorage`. Standard `GovernorVotes` reads `getPastVotes()` directly from the soulbound `OlympiaMemberNFT` (which implements `ERC721Votes`). No custom `_getVotes()` override needed. Bravo-style quorum (only "For" votes count toward quorum). Demo v0.2 additions: `GovernorPreventLateQuorum` (extends voting if quorum reached late), `GovernorStorage` (on-chain proposal storage), custom errors (`SanctionedRecipient`, `NoSanctionedRecipients`), assembly calldata decoding in sanctions helpers.
 
 **Rationale:** The soulbound `OlympiaMemberNFT` already implements `IVotes` via `ERC721Votes`, so standard `GovernorVotes` works directly. This is the simplest, most battle-tested approach. The `IOlympiaVotingModule` abstraction layer can be introduced later via OIP when module swapping is needed.
 
@@ -97,7 +97,7 @@ pragma solidity ^0.8.28;
 
 /// @title IOlympiaVotingModule
 /// @notice Modular voting power interface for OlympiaGovernor (ECIP-1113)
-/// @dev Olympia Demo v0.1 uses standard OZ GovernorVotes with soulbound
+/// @dev Demo v0.2 uses standard OZ GovernorVotes with soulbound
 ///      OlympiaMemberNFT. This interface defines the swappable voting module
 ///      pattern for governance-gated upgrades via OIP in future releases.
 interface IOlympiaVotingModule {
@@ -162,7 +162,7 @@ contract OlympiaMemberNFT is ERC721, ERC721Enumerable, ERC721Votes, IERC5192, Ac
 }
 ```
 
-### OlympiaGovernor (Phase 2B — Pending)
+### OlympiaGovernor (Phase 2B — Complete)
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -245,7 +245,7 @@ contract OlympiaGovernor is
 }
 ```
 
-### OlympiaExecutor (Phase 2B — Pending)
+### OlympiaExecutor (Phase 2B — Complete)
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -281,52 +281,53 @@ contract OlympiaExecutor {
 
 ## Deployments
 
-Contract addresses will be updated with Mordor and mainnet addresses at deployment.
+Demo v0.2 contracts deployed on both Mordor and ETC mainnet via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`). Deployer: `0x7C3311F29e318617fed0833E68D6522948AaE995`.
 
-| Network | Contract | Address | Status |
-|---------|----------|---------|--------|
-| Mordor | SanctionsOracle | TBD | Phase 2A complete (built, 14 tests) |
-| Mordor | OlympiaMemberNFT | TBD | Phase 2A complete (built, 19 tests) |
-| Mordor | OlympiaGovernor | TBD | Phase 2B pending |
-| Mordor | OlympiaExecutor | TBD | Phase 2B pending |
-| Mordor | Timelock | TBD | Phase 2B pending |
+| Contract | Address (Mordor + ETC) | Status |
+|----------|----------------------|--------|
+| SanctionsOracle | `0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709` | ✅ Deployed |
+| OlympiaMemberNFT | `0x73e78d3a3470396325b975FcAFA8105A89A9E672` | ✅ Deployed |
+| OlympiaGovernor | `0xB85dbc899472756470EF4033b9637ff8fa2FD23D` | ✅ Deployed |
+| OlympiaExecutor | `0x64624f74F77639CbA268a6c8bEDC2778B707eF9a` | ✅ Deployed |
+| TimelockController | `0xA5839b3e9445f7eE7AffdBC796DC0601f9b976C2` | ✅ Deployed |
+| ECFPRegistry | `0xFB4De5674a6b9a301d16876795a74f3bdacfa722` | ✅ Deployed |
 
 ## Gap Analysis
 
 | Spec Requirement | Status | Notes |
 |-----------------|--------|-------|
-| SanctionsOracle (ECIP-1119) | ✅ Phase 2A | MANAGER_ROLE, 14 tests |
-| OlympiaMemberNFT (soulbound) | ✅ Phase 2A | ERC721Votes + ERC5192, 19 tests |
-| IOlympiaVotingModule interface | ✅ Phase 2A | Spec artifact (not wired in Demo v0.1) |
-| IERC5192 interface | ✅ Phase 2A | Soulbound standard (not in OZ v5.6) |
-| OlympiaGovernor | Phase 2B | GovernorVotes + GovernorVotesQuorumFraction |
-| OlympiaExecutor | Phase 2B | Sanctions gate + WITHDRAWER_ROLE |
-| TimelockController | Phase 2B | Standard OZ timelock |
-| Sanctions on `propose()` | Phase 2B | Layer 1 early check |
-| `cancelIfSanctioned()` | Phase 2B | Layer 2 permissionless cancel |
-| `updateSanctionsOracle()` via OIP | Phase 2B | `onlyGovernance` setter |
+| SanctionsOracle ([ECIP-1119](https://ecips.ethereumclassic.org/ECIPs/ecip-1119)) | ✅ Complete | MANAGER_ROLE, deployed |
+| OlympiaMemberNFT (soulbound) | ✅ Complete | ERC721Votes + ERC5192, deployed |
+| IOlympiaVotingModule interface | ✅ Complete | Spec artifact (not wired in Demo v0.2) |
+| IERC5192 interface | ✅ Complete | Soulbound standard |
+| OlympiaGovernor | ✅ Complete | GovernorVotes + GovernorVotesQuorumFraction + GovernorPreventLateQuorum + GovernorStorage |
+| OlympiaExecutor | ✅ Complete | Sanctions gate, immutable Treasury caller |
+| TimelockController | ✅ Complete | Standard OZ timelock |
+| ECFPRegistry | ✅ Complete | [ECIP-1114](https://ecips.ethereumclassic.org/ECIPs/ecip-1114) hash-bound proposals |
+| Sanctions on `propose()` | ✅ Complete | Layer 1 early check |
+| `cancelIfSanctioned()` | ✅ Complete | Layer 2 permissionless cancel |
+| `updateSanctionsOracle()` via OIP | ✅ Complete | `onlyGovernance` setter |
 
 ## Staged Governance Lifecycle
 
 ```
-Phase 1: Bootstrap (current)
+Phase 1: Bootstrap
+  Treasury deployed with immutable executor (pre-computed CREATE2 address)
   Treasury accumulates basefee + donations
-  No withdrawals — governance not yet connected to Treasury
+  No withdrawals — executor contract not yet deployed (no code at that address)
 
-Phase 2: CoreDAO Activation (Stage 2)
-  OlympiaGovernor deployed with IOlympiaVotingModule + sanctions
-  OlympiaExecutor deployed, granted WITHDRAWER_ROLE on Treasury
+Phase 2: CoreDAO Activation (Stage 2) ✅ Complete
+  OlympiaGovernor deployed with sanctions integration
+  OlympiaExecutor deployed at pre-computed CREATE2 address → governance activates
   Timelock configured: Governor=PROPOSER+CANCELLER, Executor=EXECUTOR
-  Withdrawals enabled through Governor → Timelock → Executor pipeline
+  Withdrawals enabled through Governor → Timelock → Executor → Treasury pipeline
 
 Phase 3: Futarchy Integration (Stage 3)
-  Additional WITHDRAWER_ROLE → FutarchyExecutor (ECIP-1117)
+  FutarchyExecutor deployed as additional authorized caller
   CoreDAO activates Futarchy as a child DAO via governance proposal; both paths share the Treasury
-
-Phase 4: Governance Maturity
-  Admin renouncement on Treasury
-  Contract converges to immutable multi-executor vault
 ```
+
+**Note:** Demo v0.2 Treasury is immutable from deployment — no admin, no roles, no staged admin transfer. The executor is fixed at construction time.
 
 ## OpenZeppelin Compatibility
 
@@ -334,23 +335,25 @@ Phase 4: Governance Maturity
 
 | Component | Version | Contract |
 |-----------|---------|----------|
-| ERC721 | v5.6.0 | Base NFT for OlympiaMemberNFT |
-| ERC721Enumerable | v5.6.0 | totalSupply(), tokenByIndex() |
-| ERC721Votes | v5.6.0 | Delegation + getPastVotes() |
-| EIP712 | v5.6.0 | Structured data signing (required by ERC721Votes) |
-| AccessControl | v5.6.0 | MINTER_ROLE (NFT), MANAGER_ROLE (Oracle) |
+| ERC721 | v5.1.0 | Base NFT for OlympiaMemberNFT |
+| ERC721Enumerable | v5.1.0 | totalSupply(), tokenByIndex() |
+| ERC721Votes | v5.1.0 | Delegation + getPastVotes() |
+| EIP712 | v5.1.0 | Structured data signing (required by ERC721Votes) |
+| AccessControl | v5.1.0 | MINTER_ROLE (NFT), MANAGER_ROLE (Oracle) |
 
-### Phase 2B (Pending)
+### Phase 2B (Complete)
 
 | Component | Version | Contract |
 |-----------|---------|----------|
-| Governor | v5.6.0 | Proposal lifecycle |
-| GovernorSettings | v5.6.0 | Voting delay, period, proposal threshold |
-| GovernorCountingSimple | v5.6.0 | For/Against/Abstain (Bravo-style) |
-| GovernorVotes | v5.6.0 | Reads soulbound NFT votes directly |
-| GovernorVotesQuorumFraction | v5.6.0 | Quorum = % of NFT holders |
-| GovernorTimelockControl | v5.6.0 | Timelock integration |
-| TimelockController | v5.6.0 | Delay queue |
+| Governor | v5.1.0 | Proposal lifecycle |
+| GovernorSettings | v5.1.0 | Voting delay, period, proposal threshold |
+| GovernorCountingSimple | v5.1.0 | For/Against/Abstain (Bravo-style) |
+| GovernorVotes | v5.1.0 | Reads soulbound NFT votes directly |
+| GovernorVotesQuorumFraction | v5.1.0 | Quorum = % of NFT holders |
+| GovernorTimelockControl | v5.1.0 | Timelock integration |
+| GovernorPreventLateQuorum | v5.1.0 | Extends voting if quorum reached late |
+| GovernorStorage | v5.1.0 | On-chain proposal storage |
+| TimelockController | v5.1.0 | Delay queue |
 
 ## Deployment Sequence
 
@@ -360,20 +363,21 @@ Phase 2A (Complete — olympia-governance-contracts repo):
 2. ✅ Build OlympiaMemberNFT (soulbound ERC721Votes + ERC5192) — 19 tests
 3. ✅ Build IOlympiaVotingModule interface (spec artifact)
 
-Phase 2B (Pending):
-4. Deploy SanctionsOracle
-5. Deploy OlympiaMemberNFT
-6. Deploy OlympiaTimelock
-7. Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle)
-8. Deploy OlympiaGovernor (GovernorVotes reads OlympiaMemberNFT directly)
-9. Configure Timelock: Governor=PROPOSER+CANCELLER, Executor=EXECUTOR
-10. Grant WITHDRAWER_ROLE on Treasury to OlympiaExecutor
-11. Test full governance lifecycle on Mordor
+Phase 2B (Complete — deployed Mordor + ETC):
+4. ✅ Deploy SanctionsOracle → 0xfF2B...2709
+5. ✅ Deploy OlympiaMemberNFT → 0x73e7...9672
+6. ✅ Deploy TimelockController → 0xA583...f9C2
+7. ✅ Deploy OlympiaExecutor (treasury + timelock + sanctionsOracle) → 0x6462...eF9a
+8. ✅ Deploy OlympiaGovernor (GovernorVotes reads OlympiaMemberNFT directly) → 0xB85d...F23D
+9. ✅ Deploy ECFPRegistry → 0xFB4D...a722
+10. ✅ Configure Timelock: Governor=PROPOSER+CANCELLER, Executor=EXECUTOR
+11. ✅ Executor is Treasury's immutable authorized caller (set at construction)
+12. ✅ E2E lifecycle tested: ECFP-001 submitted, voted, queued, executed
 ```
 
-## Test Suite Requirements
+## Test Suite (106 tests — Complete)
 
-### Phase 2A (33 tests — Complete)
+### Phase 2A
 
 **SanctionsOracle (14 tests):**
 - Add/remove happy path + events
@@ -391,35 +395,41 @@ Phase 2B (Pending):
 - supportsInterface: ERC721, ERC721Enumerable, IERC5192, AccessControl
 - Access control: only MINTER_ROLE can mint
 
-### Phase 2B (Pending)
+### Phase 2B (Complete)
 
+**OlympiaGovernor + OlympiaExecutor + TimelockController + ECFPRegistry (73 tests):**
 - Full lifecycle: deposit → propose → vote → queue → timelock → execute → receive
 - Sanctions: early rejection on propose, mid-lifecycle cancel, execution-time revert
 - Governance upgrades: `updateSanctionsOracle()` via OIP
 - Access control: unauthorized calls revert at every layer
-- Staged governance: admin → CoreDAO executor → admin renounce
+- ECFPRegistry: submit, draft lifecycle, review period, input validation
 - Edge cases: zero-value, duplicate execution, cancelled proposals, quorum failures
+- Late quorum extension (GovernorPreventLateQuorum)
+- Proposal storage and retrieval (GovernorStorage)
 
 ## Verification
 
 ```bash
-# Phase 2A — Foundation contracts
-cd olympia-governance-contracts && forge test -vv  # 33 tests
+# Run tests (106 tests)
+cd olympia-governance-contracts && forge test -vv
 
-# Phase 2B — Post-deployment verification
-cast call <governor> "votingDelay()" --rpc-url $MORDOR_RPC_URL
-cast call <governor> "votingPeriod()" --rpc-url $MORDOR_RPC_URL
-cast call <governor> "quorum(uint256)" <block> --rpc-url $MORDOR_RPC_URL
+# Verify governance parameters
+cast call 0xB85dbc899472756470EF4033b9637ff8fa2FD23D "votingDelay()" --rpc-url $MORDOR_RPC_URL
+cast call 0xB85dbc899472756470EF4033b9637ff8fa2FD23D "votingPeriod()" --rpc-url $MORDOR_RPC_URL
 
 # Verify GovernorVotes reads OlympiaMemberNFT
-cast call <governor> "token()" --rpc-url $MORDOR_RPC_URL  # Should return OlympiaMemberNFT address
+cast call 0xB85dbc899472756470EF4033b9637ff8fa2FD23D "token()" --rpc-url $MORDOR_RPC_URL
+# Expected: 0x73e78d3a3470396325b975FcAFA8105A89A9E672
 
 # Verify Executor
-cast call <executor> "treasury()" --rpc-url $MORDOR_RPC_URL
-cast call <executor> "timelock()" --rpc-url $MORDOR_RPC_URL
+cast call 0x64624f74F77639CbA268a6c8bEDC2778B707eF9a "treasury()" --rpc-url $MORDOR_RPC_URL
+# Expected: 0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf
+cast call 0x64624f74F77639CbA268a6c8bEDC2778B707eF9a "timelock()" --rpc-url $MORDOR_RPC_URL
+# Expected: 0xA5839b3e9445f7eE7AffdBC796DC0601f9b976C2
 
 # Verify Sanctions integration
-cast call <governor> "sanctionsOracle()" --rpc-url $MORDOR_RPC_URL
+cast call 0xB85dbc899472756470EF4033b9637ff8fa2FD23D "sanctionsOracle()" --rpc-url $MORDOR_RPC_URL
+# Expected: 0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709
 ```
 
 ## Copyright

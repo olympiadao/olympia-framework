@@ -13,14 +13,14 @@ This is a documentation repo. No build system, no tests, no runtime dependencies
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | Solidity | ^0.8.20 | Contract interfaces (inline in specs) |
-| OpenZeppelin | v5.6 | Referenced contract library |
+| OpenZeppelin | v5.1.0 | Governance contracts (Shanghai EVM). Treasury is pure Solidity. |
 | Foundry | Latest | Referenced test framework |
 | Markdown | — | Spec authoring |
 
 ## Key Rules
 
 1. Keep ECIP cross-references consistent across all spec files
-2. Solidity uses `pragma solidity ^0.8.20` and OpenZeppelin v5.6
+2. Governance uses OZ v5.1.0 (Shanghai). Treasury is pure Solidity (no OZ).
 3. All content is CC0-1.0 licensed
 4. ECIP-1122 supersedes ECIP-1120
 5. Contract addresses are Mordor testnet (chainId 63) unless noted

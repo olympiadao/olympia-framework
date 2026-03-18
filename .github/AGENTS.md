@@ -51,7 +51,7 @@ license: CC0-1.0
 ## Key Rules
 
 1. Cross-references between ECIPs must be consistent (if spec A references ECIP-1122, verify 1122 exists)
-2. Solidity interfaces use `pragma solidity ^0.8.20` and OpenZeppelin v5.6
+2. Governance contracts use OpenZeppelin v5.1.0 (Shanghai EVM). Treasury is pure Solidity (no OZ dependency).
 3. All specs use CC0-1.0 license
 4. Contract addresses are for Mordor testnet (chainId 63) unless noted
 5. Stage assignments are fixed — don't reorder without discussion

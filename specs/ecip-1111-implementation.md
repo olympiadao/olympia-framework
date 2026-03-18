@@ -7,7 +7,7 @@ category: Core
 requires: 1112
 author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
 created: 2025-07-04
-updated: 2026-03-08
+updated: 2026-03-18
 license: CC0-1.0
 ---
 
@@ -52,8 +52,8 @@ Demo deployed via CREATE2 with a single salt for deterministic addressing across
 
 | Network | Address | Derivation |
 |---------|---------|------------|
-| Mordor | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | CREATE2 with salt `keccak256("OLYMPIA_DEMO_V0_1")` |
-| ETC Mainnet | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` | CREATE2 with salt `keccak256("OLYMPIA_DEMO_V0_1")` |
+| Mordor | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` | CREATE (deployer `0x7C3311...`, nonce 0) |
+| ETC Mainnet | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` | CREATE (deployer `0x7C3311...`, nonce 0) |
 
 ## Client Implementation Status
 

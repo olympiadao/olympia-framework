@@ -7,7 +7,7 @@
 **Olympia Framework** — the canonical planning and specification repo for Ethereum Classic's Olympia upgrade. Houses the framework document (README.md) and all 11 ECIP implementation specs.
 
 **Repository:** https://github.com/olympiadao/olympia-framework
-**Status:** Phase 0 complete (specs drafted). Phase 1 (Stage 2 contracts) next.
+**Status:** Phase 2D in progress (governance lifecycle testing). Stage 2 contracts deployed.
 
 This is a **documentation and planning repo**, not a code repo. No build system, no tests, no dependencies. Solidity interfaces appear inline in spec files for reference.
 
@@ -20,7 +20,7 @@ This is a **documentation and planning repo**, not a code repo. No build system,
 | Stage | ECIPs | Type | Status |
 |-------|-------|------|--------|
 | 1 — Hard Fork | 1111, 1112, 1121 | Consensus | Implemented (3 clients) |
-| 2 — CoreDAO | 1113, 1114, 1119 | Contract | Governor rewrite needed |
+| 2 — CoreDAO | 1113, 1114, 1119 | Contract | Deployed (7 contracts, 106 tests) |
 | 3 — Futarchy | 1117, 1118 | Contract | Prototype deployed |
 | 4 — Miner Experimentation | 1115 | Contract | Phase 4 |
 | 5 — Protocol Hardcode | 1116, 1122 | Consensus | Deferred |
@@ -64,7 +64,7 @@ olympia-framework/
 | Repo | Org | Purpose |
 |------|-----|---------|
 | olympia-treasury-contract | olympiadao | Treasury vault (ECIP-1112) — deployed Mordor + ETC |
-| olympia-governance-contracts | olympiadao | SanctionsOracle, OlympiaMemberNFT, interfaces (ECIP-1113, 1119) |
+| olympia-governance-contracts | olympiadao | Governor, Executor, Timelock, ECFPRegistry, SanctionsOracle, MemberNFT (ECIP-1113, 1114, 1119) — 106 tests |
 | degov | olympiadao | Original Governor prototype — archived |
 | olympia-futarchy | olympiadao | Futarchy research + prediction markets (ECIP-1117, 1118) |
 | olympia-brand | olympiadao | Logo SVGs, favicons, OG images, design tokens |
@@ -84,8 +84,8 @@ See README.md Deployment Addresses table.
 
 | Contract | Address |
 |----------|---------|
-| OlympiaTreasury | `0xd6165F3aF4281037bce810621F62B43077Fb0e37` (Mordor + ETC mainnet) |
-| Deployer | `0x3b0952fB8eAAC74E56E176102eBA70BAB1C81537` |
+| OlympiaTreasury | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` (Mordor + ETC mainnet) |
+| Deployer | `0x7C3311F29e318617fed0833E68D6522948AaE995` |
 
 ---
 
@@ -119,5 +119,5 @@ See README.md Deployment Addresses table.
 - Frontmatter uses YAML with fields: ecip, title, status, type, category, requires, supersedes, author, created, updated, license
 - Authors: `Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)`
 - License: `CC0-1.0`
-- Solidity interfaces use `pragma solidity ^0.8.28` and OpenZeppelin v5.6.0
+- Governance contracts use OpenZeppelin v5.1.0 (Shanghai EVM). Treasury is pure Solidity (no OZ dependency).
 - All specs end with a Copyright section linking to CC0
