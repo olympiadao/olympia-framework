@@ -357,11 +357,11 @@ Cross-client verification completed via six-client audit (March 2026). All conse
 
 ## Contract Stack
 
-Demo v0.2 governance contracts use **Solidity 0.8.28**, **OpenZeppelin v5.1.0**, and **Foundry**. Treasury is pure Solidity (no OpenZeppelin dependency).
+Production contracts will use **Solidity 0.8.28**, **OpenZeppelin v5.6.0** (requires Cancun opcodes via Olympia fork), and **Foundry**. Demo v0.2 uses OZ v5.1.0 (Shanghai compatible). Treasury is pure Solidity (no OpenZeppelin dependency).
 
 ## Deployment Addresses
 
-Demo v0.2 contracts. Treasury deployed via CREATE (nonce-based), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`).
+Demo v0.2 (pre-production) contracts. Treasury deployed via CREATE (nonce-based), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`). Production addresses will differ — OZ 5.6 (Cancun) produces different bytecode than OZ 5.1 (Shanghai), resulting in different CREATE2 addresses.
 
 | Contract | Phase | Mordor | ETC Mainnet |
 |----------|-------|--------|-------------|
@@ -463,7 +463,9 @@ Demo v0.2 contracts. Treasury deployed via CREATE (nonce-based), governance via 
 |--------|---------|----------|------------|------------|
 | `demo_v0.1` | Historical snapshot | OZ 5.6 AccessControl, CREATE2 | OZ 5.1.0, CREATE2 | 5.6 (treasury), 5.1 (governance) |
 | `demo_v0.2` | Current demo deployment | Pure Solidity, CREATE | OZ 5.1.0 (Shanghai), CREATE2 | 5.1.0 (governance only) |
-| `main` | Production target | TBD (post-Olympia) | OZ 5.6.0 (Cancun) | 5.6.0 |
+| `main` | Production target (post-Olympia) | TBD | OZ 5.6.0 (Cancun) | 5.6.0 |
+
+Production deployment happens after Olympia activation (Mordor ~March 28, 2026; ETC mainnet ~June 2026). Production contracts require Cancun opcodes (MCOPY/EIP-5656) enabled by the Olympia fork itself.
 
 ---
 

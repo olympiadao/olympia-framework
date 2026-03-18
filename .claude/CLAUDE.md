@@ -119,5 +119,5 @@ See README.md Deployment Addresses table.
 - Frontmatter uses YAML with fields: ecip, title, status, type, category, requires, supersedes, author, created, updated, license
 - Authors: `Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)`
 - License: `CC0-1.0`
-- Governance contracts use OpenZeppelin v5.1.0 (Shanghai EVM). Treasury is pure Solidity (no OZ dependency).
+- Production targets OZ v5.6.0 (Cancun EVM). Demo v0.2 uses OZ v5.1.0 (Shanghai). Treasury is pure Solidity (no OZ dependency).
 - All specs end with a Copyright section linking to CC0

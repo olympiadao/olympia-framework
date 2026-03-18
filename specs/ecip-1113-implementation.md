@@ -432,6 +432,10 @@ cast call 0xB85dbc899472756470EF4033b9637ff8fa2FD23D "sanctionsOracle()" --rpc-u
 # Expected: 0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709
 ```
 
+## Production Notes
+
+Demo v0.2 deployed with OpenZeppelin v5.1.0 (Shanghai EVM compatible). Production deployment targets OZ v5.6.0 (requires Cancun opcodes via Olympia fork). Different OZ bytecode will produce different CREATE2 addresses.
+
 ## Copyright
 
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/)

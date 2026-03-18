@@ -194,6 +194,10 @@ cast balance 0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf --rpc-url $MORDOR_RPC_UR
 cast code 0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf --rpc-url $MORDOR_RPC_URL
 ```
 
+## Production Notes
+
+Demo v0.2 uses pure Solidity with an immutable executor. Production deployment will use the same architecture — recompiled against OZ 5.6.0 (Cancun EVM) for the governance contracts. Treasury remains pure Solidity.
+
 ## Copyright
 
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
