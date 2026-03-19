@@ -6,7 +6,7 @@
 
 Olympia Framework — specification and planning repo for Ethereum Classic's Olympia upgrade. 11 ECIPs across 5 stages: basefee redirect, treasury governance, futarchy, miner distribution, EVM compatibility.
 
-This is a documentation repo. No build system, no tests, no runtime dependencies. Solidity interfaces appear inline in spec files.
+This is a documentation repo. No build system, no tests, no runtime dependencies. ECIP specs are published at https://ecips.ethereumclassic.org.
 
 ## Tech Stack
 
@@ -28,7 +28,6 @@ This is a documentation repo. No build system, no tests, no runtime dependencies
 ## Structure
 
 ```
-specs/                    # 11 ECIP implementation specs
 README.md                 # Framework overview document
 ```
 
