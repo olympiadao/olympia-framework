@@ -30,8 +30,8 @@ This adds ~1 gwei per transaction — less than 0.01% of miner income at current
 
 | Network | Block Height | Estimated Date | Status |
 |---------|-------------|----------------|--------|
-| Mordor Testnet | 15,800,850 | ~March 28, 2026 | Pending |
-| ETC Mainnet | ~24,751,337 | ~mid-June 2026 | Pending |
+| Mordor Testnet | TBD | TBD | Pending |
+| ETC Mainnet | TBD | TBD | Pending |
 
 ## ETC-Specific Deviation from Ethereum
 
