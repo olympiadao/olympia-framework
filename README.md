@@ -1,5 +1,7 @@
 # Olympia Framework
 
+> **Production** — Olympia ECIP spec compliant. Drafted for future production deployment on Mordor and ETC mainnet. Post-Olympia EVM (Cancun), OpenZeppelin v5.6.0. Treasury deploys before Olympia upgrade via CREATE from a fresh deployer (hardcoded in clients). Governance deploys after Olympia hard fork via CREATE2. Same addresses on Mordor and ETC mainnet.
+
 **A Staged Governance and Funding System for Ethereum Classic**
 
 Authors: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
