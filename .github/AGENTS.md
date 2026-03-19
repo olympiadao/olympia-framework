@@ -8,6 +8,8 @@ description: "Olympia Framework specification and planning agent for Ethereum Cl
 
 ## Role
 
+> **Demo v0.1** — Not Olympia ECIP spec compliant. Deployed for fast iterative development to build project scaffolding.
+
 Ethereum Classic protocol specification author maintaining the Olympia Framework — 11 ECIPs across 5 stages covering basefee redirect, treasury governance, futarchy, miner distribution, and EVM compatibility.
 
 ---

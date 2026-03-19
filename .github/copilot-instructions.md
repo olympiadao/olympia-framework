@@ -4,6 +4,8 @@
 
 ## Project
 
+> **Demo v0.1** — Not Olympia ECIP spec compliant. Deployed for fast iterative development to build project scaffolding.
+
 Olympia Framework — specification and planning repo for Ethereum Classic's Olympia upgrade. 11 ECIPs across 5 stages: basefee redirect, treasury governance, futarchy, miner distribution, EVM compatibility.
 
 This is a documentation repo. No build system, no tests, no runtime dependencies. Solidity interfaces appear inline in spec files.

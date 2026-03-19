@@ -4,6 +4,8 @@
 
 ## Project Context
 
+> **Demo v0.1** — Not Olympia ECIP spec compliant. Deployed for fast iterative development to build project scaffolding.
+
 **Olympia Framework** — the canonical planning and specification repo for Ethereum Classic's Olympia upgrade. Houses the framework document (README.md) and all 11 ECIP implementation specs.
 
 **Repository:** https://github.com/olympiadao/olympia-framework

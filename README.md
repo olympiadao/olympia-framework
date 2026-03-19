@@ -1,5 +1,7 @@
 # Olympia Framework
 
+> **Demo v0.1** — Not Olympia ECIP spec compliant. Deployed for fast iterative development to build project scaffolding. Not for production use. See `demo_v0.2` for the spec-aligned deployment.
+
 **A Staged Governance and Funding System for Ethereum Classic**
 
 Authors: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
