@@ -27,8 +27,8 @@ This is a **documentation and planning repo**, not a code repo. No build system,
 
 **Clients:** core-geth (Go), besu-etc (Java), fukuii (Scala) — all with Olympia branches.
 
-**Mordor activation:** block 15,800,850 (~March 28, 2026)
-**ETC mainnet target:** ~24,751,337 (~mid-June 2026)
+**Next step:** Mordor Testnet Deployment (block TBD)
+**ETC mainnet target:** TBD
 
 ---
 

@@ -21,8 +21,8 @@ These EIPs are activated alongside ECIP-1111 (EIP-1559 + EIP-3198) in the same O
 
 | Network | Block Height | Estimated Date | Status |
 |---------|-------------|----------------|--------|
-| Mordor Testnet | 15,800,850 | ~March 28, 2026 | Pending |
-| ETC Mainnet | ~24,751,337 | ~mid-June 2026 | Pending |
+| Mordor Testnet | TBD | TBD | Pending |
+| ETC Mainnet | TBD | TBD | Pending |
 
 ## Included EIPs
 
