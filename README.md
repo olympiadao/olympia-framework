@@ -41,8 +41,8 @@ Olympia solves all four by building from the bottom up: first accumulate, then g
 │  STAGE 1: OLYMPIA HARD FORK                           │
 │  Consensus layer — basefee redirect + EVM upgrade     │
 │  ECIPs: 1111, 1112, 1121                              │
-│  Mordor: block 15,800,850 (~Mar 28, 2026)             │
-│  Mainnet: ~24,751,337 (~mid-June 2026)                │
+│  Mordor: block TBD                                    │
+│  Mainnet: block TBD                                   │
 └───────────────┬───────────────────────────────────────┘
                 │ Treasury accumulates basefee + donations
                 │ No withdrawals — iron out governance details
@@ -101,13 +101,13 @@ Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ �
 - Brand assets, landing pages (olympiadao.org, olympiatreasury.org) live
 
 **In progress:**
-- Mordor activation at block 15,800,850 (~March 28, 2026)
+- Next step: Mordor Testnet Deployment
 - Governance dApp polish and deployment
 
 **Next milestones:**
-- Mordor hard fork activation (~March 28, 2026)
+- Mordor hard fork activation (block TBD)
 - Additional governance lifecycle tests (ECFP-002, 003, 004)
-- ETC mainnet activation at ~24,751,337 (~mid-June 2026)
+- ETC mainnet activation (block TBD)
 
 ---
 
@@ -115,7 +115,7 @@ Stage 5: DEFERRED ░░░░░░░░░░░░░░░░░░░░ �
 
 **ECIPs:** 1111, 1112, 1121
 **Type:** Consensus layer (hard fork)
-**Activation:** Mordor block 15,800,850, ETC mainnet ~24,751,337
+**Activation:** Mordor block TBD, ETC mainnet block TBD
 
 Stage 1 does two things: activates EIP-1559 (redirecting basefee to a Treasury instead of burning it) and brings ETC's EVM up to parity with Ethereum's latest opcodes and precompiles.
 
@@ -440,9 +440,9 @@ All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_
 ### Phase 3: Mordor Activation + Mainnet
 
 ```
-14. Mordor hard fork activation at block 15,800,850 (~March 28, 2026)
+14. Mordor hard fork activation (block TBD)
 15. Monitor governance pipeline through fork boundary
-16. ETC mainnet activation at ~24,751,337 (~mid-June 2026)
+16. ETC mainnet activation (block TBD)
 17. Deploy Stage 2 contracts on ETC mainnet
 ```
 
