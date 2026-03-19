@@ -494,7 +494,6 @@ Full specifications for all 11 ECIPs are published in the [ECIPs repository](htt
 |------|---------|-------|--------|
 | [olympia-treasury-contract](https://github.com/olympiadao/olympia-treasury-contract) | Treasury vault — Solidity + Foundry tests (ECIP-1112) | 1 | Deployed (Mordor + ETC) |
 | [olympia-governance-contracts](https://github.com/olympiadao/olympia-governance-contracts) | Governor, Executor, Timelock, ECFPRegistry, SanctionsOracle, MemberNFT (ECIP-1113, 1114, 1119) | 2 | Deployed on Mordor (87 tests) |
-| [degov](https://github.com/olympiadao/degov) | Original Governor prototype — superseded by olympia-governance-contracts | 2 | Archived |
 | [olympia-futarchy](https://github.com/olympiadao/olympia-futarchy) | Futarchy research + prediction market contracts (ECIP-1117, 1118) | 3 | Research complete |
 
 ### Client Repos
