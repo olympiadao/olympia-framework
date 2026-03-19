@@ -53,7 +53,6 @@ olympia-framework/
 |------|-----|---------|
 | olympia-treasury-contract | olympiadao | Treasury vault (ECIP-1112) — deployed Mordor + ETC |
 | olympia-governance-contracts | olympiadao | Governor, Executor, Timelock, ECFPRegistry, SanctionsOracle, MemberNFT (ECIP-1113, 1114, 1119) — 106 tests |
-| degov | olympiadao | Original Governor prototype — archived |
 | olympia-futarchy | olympiadao | Futarchy research + prediction markets (ECIP-1117, 1118) |
 | olympia-brand | olympiadao | Logo SVGs, favicons, OG images, design tokens |
 | olympiadao-org | olympiadao | olympiadao.org landing page |
