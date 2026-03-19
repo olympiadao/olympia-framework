@@ -1,5 +1,7 @@
 # Olympia Framework
 
+> **Demo v0.2** — Olympia ECIP spec compliant. Deployed for live Mordor and ETC mainnet development testing. Pre-Olympia EVM (Shanghai), OpenZeppelin v5.1.0 (governance). Not production.
+
 **A Staged Governance and Funding System for Ethereum Classic**
 
 Authors: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
