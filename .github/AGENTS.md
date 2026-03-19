@@ -28,25 +28,9 @@ The Olympia Framework defines a staged governance and funding system for Ethereu
 
 ---
 
-## Spec Structure
+## ECIP Specifications
 
-Each spec file in `specs/` follows this format:
-
-```yaml
----
-ecip: <number>
-title: <title> — Implementation Spec
-status: Implementation
-type: Standards Track | Meta
-category: Core | ECBP
-requires: <comma-separated ECIP numbers>
-supersedes: <ECIP number if applicable>
-author: Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)
-created: <date>
-updated: <date>
-license: CC0-1.0
----
-```
+All 11 Olympia ECIPs are published at https://ecips.ethereumclassic.org/ECIPs/ecip-{number}.
 
 ---
 

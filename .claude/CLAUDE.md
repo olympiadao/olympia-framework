@@ -6,12 +6,12 @@
 
 > **Demo v0.1** — Not Olympia ECIP spec compliant. Deployed for fast iterative development to build project scaffolding.
 
-**Olympia Framework** — the canonical planning and specification repo for Ethereum Classic's Olympia upgrade. Houses the framework document (README.md) and all 11 ECIP implementation specs.
+**Olympia Framework** — the canonical planning and specification repo for Ethereum Classic's Olympia upgrade. Houses the framework document (README.md). ECIP specs are published at https://ecips.ethereumclassic.org.
 
 **Repository:** https://github.com/olympiadao/olympia-framework
 **Status:** Phase 0 complete (specs drafted). Phase 1 (Stage 2 contracts) next.
 
-This is a **documentation and planning repo**, not a code repo. No build system, no tests, no dependencies. Solidity interfaces appear inline in spec files for reference.
+This is a **documentation and planning repo**, not a code repo. No build system, no tests, no dependencies.
 
 ---
 
@@ -42,21 +42,9 @@ olympia-framework/
 ├── LICENSE                # CC0-1.0
 ├── .gitignore
 ├── .claude/CLAUDE.md      # This file
-├── .github/
-│   ├── AGENTS.md
-│   └── copilot-instructions.md
-└── specs/
-    ├── ecip-1111-implementation.md
-    ├── ecip-1112-implementation.md
-    ├── ecip-1113-implementation.md
-    ├── ecip-1114-implementation.md
-    ├── ecip-1115-implementation.md
-    ├── ecip-1116-implementation.md
-    ├── ecip-1117-implementation.md
-    ├── ecip-1118-implementation.md
-    ├── ecip-1119-implementation.md
-    ├── ecip-1121-implementation.md
-    └── ecip-1122-implementation.md
+└── .github/
+    ├── AGENTS.md
+    └── copilot-instructions.md
 ```
 
 ---
@@ -104,7 +92,7 @@ See README.md Deployment Addresses table.
 
 - Changing ECIP numbers or stage assignments
 - Adding new ECIPs to the framework
-- Modifying contract interfaces in specs (affects multiple repos)
+- Modifying contract interfaces (affects multiple repos)
 - Changing activation block numbers
 
 ### Never Do
@@ -116,10 +104,10 @@ See README.md Deployment Addresses table.
 
 ---
 
-## Spec Conventions
+## ECIP Specifications
 
-- Frontmatter uses YAML with fields: ecip, title, status, type, category, requires, supersedes, author, created, updated, license
+All 11 Olympia ECIPs are published at https://ecips.ethereumclassic.org/ECIPs/ecip-{number}.
+
 - Authors: `Cody Burns (@realcodywburns), Chris Mercer (@chris-mercer)`
 - License: `CC0-1.0`
 - Solidity interfaces use `pragma solidity ^0.8.28` and OpenZeppelin v5.6.0
-- All specs end with a Copyright section linking to CC0

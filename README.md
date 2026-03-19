@@ -466,25 +466,23 @@ All Demo v0.1 contracts deployed via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_
 
 ---
 
-## Implementation Specs
+## ECIP Specifications
 
-Full implementation specifications for all 11 ECIPs are in [`specs/`](specs/):
+Full specifications for all 11 ECIPs are published in the [ECIPs repository](https://ecips.ethereumclassic.org):
 
-| ECIP | Spec | Stage |
-|------|------|-------|
-| 1111 | [ecip-1111-implementation.md](specs/ecip-1111-implementation.md) | 1 — Hard Fork |
-| 1112 | [ecip-1112-implementation.md](specs/ecip-1112-implementation.md) | 1 — Hard Fork |
-| 1113 | [ecip-1113-implementation.md](specs/ecip-1113-implementation.md) | 2 — CoreDAO |
-| 1114 | [ecip-1114-implementation.md](specs/ecip-1114-implementation.md) | 2 — CoreDAO |
-| 1115 | [ecip-1115-implementation.md](specs/ecip-1115-implementation.md) | 4 — Miner Experimentation |
-| 1116 | [ecip-1116-implementation.md](specs/ecip-1116-implementation.md) | 5 — Protocol Hardcode |
-| 1117 | [ecip-1117-implementation.md](specs/ecip-1117-implementation.md) | 3 — Futarchy |
-| 1118 | [ecip-1118-implementation.md](specs/ecip-1118-implementation.md) | 3 — Futarchy |
-| 1119 | [ecip-1119-implementation.md](specs/ecip-1119-implementation.md) | 2 — CoreDAO |
-| 1121 | [ecip-1121-implementation.md](specs/ecip-1121-implementation.md) | 1 — Hard Fork |
-| 1122 | [ecip-1122-implementation.md](specs/ecip-1122-implementation.md) | 5 — Protocol Hardcode |
-
-Each spec includes contract interfaces, deployment details, gap analysis against the original draft, amendments with rationale, test requirements, and verification commands.
+| ECIP | Title | Stage |
+|------|-------|-------|
+| [ECIP-1111](https://ecips.ethereumclassic.org/ECIPs/ecip-1111) | EIP-1559 + EIP-3198 | 1 — Hard Fork |
+| [ECIP-1112](https://ecips.ethereumclassic.org/ECIPs/ecip-1112) | Treasury Contract | 1 — Hard Fork |
+| [ECIP-1113](https://ecips.ethereumclassic.org/ECIPs/ecip-1113) | CoreDAO Governance Framework | 2 — CoreDAO |
+| [ECIP-1114](https://ecips.ethereumclassic.org/ECIPs/ecip-1114) | ECFP Funding Proposals | 2 — CoreDAO |
+| [ECIP-1115](https://ecips.ethereumclassic.org/ECIPs/ecip-1115) | L-Curve Smoothing | 4 — Miner Experimentation |
+| [ECIP-1116](https://ecips.ethereumclassic.org/ECIPs/ecip-1116) | Basefee Split (5%/95%) | 5 — Protocol Hardcode |
+| [ECIP-1117](https://ecips.ethereumclassic.org/ECIPs/ecip-1117) | Futarchy DAO | 3 — Futarchy |
+| [ECIP-1118](https://ecips.ethereumclassic.org/ECIPs/ecip-1118) | Streaming Disbursements | 3 — Futarchy |
+| [ECIP-1119](https://ecips.ethereumclassic.org/ECIPs/ecip-1119) | Sanctions Constraint | 2 — CoreDAO |
+| [ECIP-1121](https://ecips.ethereumclassic.org/ECIPs/ecip-1121) | EVM Compatibility Sprint | 1 — Hard Fork |
+| [ECIP-1122](https://ecips.ethereumclassic.org/ECIPs/ecip-1122) | Protocol-Native Miner Distribution | 5 — Protocol Hardcode |
 
 ---
 
