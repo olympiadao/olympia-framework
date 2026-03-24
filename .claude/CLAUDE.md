@@ -65,14 +65,14 @@ olympia-framework/
 
 ---
 
-## Key Addresses
+## Key Addresses (Demo v0.3)
 
-See README.md Deployment Addresses table.
+See README.md Deployment Addresses table. 9 contracts deployed via CREATE2 (salt: `OLYMPIA_DEMO_V0_3`) + Treasury via CREATE. Identical on Mordor (63) + ETC (61).
 
 | Contract | Address |
 |----------|---------|
-| OlympiaTreasury | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` (Mordor + ETC mainnet) |
-| Deployer | `0x7C3311F29e318617fed0833E68D6522948AaE995` |
+| OlympiaTreasury | `0x60d0A7394f9Cd5C469f9F5Ec4F9C803F5294d79b` |
+| Deployer | `0xAF21767a2c5b3acFFB64dC64CD5A876e91155bD0` |
 
 ---
 

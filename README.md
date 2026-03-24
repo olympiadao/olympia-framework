@@ -1,6 +1,6 @@
 # Olympia Framework
 
-> **Demo v0.2** — Olympia ECIP spec compliant. Deployed for live Mordor and ETC mainnet development testing. Pre-Olympia EVM (Shanghai), OpenZeppelin v5.1.0 (governance). Not production.
+> **Demo v0.3** — Olympia ECIP spec compliant. 9 contracts deployed on Mordor + ETC mainnet. On-chain SVG art, sybil resistance, deterministic CREATE2 (salt: `OLYMPIA_DEMO_V0_3`). Not production.
 
 **A Staged Governance and Funding System for Ethereum Classic**
 
@@ -363,18 +363,20 @@ Demo v0.2 governance contracts use **Solidity 0.8.28**, **OpenZeppelin v5.1.0**,
 
 ## Deployment Addresses
 
-Demo v0.2 contracts. Treasury deployed via CREATE (nonce-based), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_2")`).
+Demo v0.3 contracts. Treasury deployed via CREATE (nonce 0), governance via CREATE2 (salt: `keccak256("OLYMPIA_DEMO_V0_3")`). Identical addresses on Mordor (63) and ETC Mainnet (61).
 
-| Contract | Phase | Mordor | ETC Mainnet |
-|----------|-------|--------|-------------|
-| OlympiaTreasury | 1 ✅ | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` | `0x035b2e3c189B772e52F4C3DA6c45c84A3bB871bf` |
-| OlympiaGovernor | 2B ✅ | `0xB85dbc899472756470EF4033b9637ff8fa2FD23D` | `0xB85dbc899472756470EF4033b9637ff8fa2FD23D` |
-| OlympiaExecutor | 2B ✅ | `0x64624f74F77639CbA268a6c8bEDC2778B707eF9a` | `0x64624f74F77639CbA268a6c8bEDC2778B707eF9a` |
-| TimelockController | 2B ✅ | `0xA5839b3e9445f7eE7AffdBC796DC0601f9b976C2` | `0xA5839b3e9445f7eE7AffdBC796DC0601f9b976C2` |
-| ECFPRegistry | 2B ✅ | `0xFB4De5674a6b9a301d16876795a74f3bdacfa722` | `0xFB4De5674a6b9a301d16876795a74f3bdacfa722` |
-| SanctionsOracle | 2A ✅ | `0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709` | `0xfF2B8D7937D908D81C72D20AC99302EE6ACc2709` |
-| OlympiaMemberNFT | 2A ✅ | `0x73e78d3a3470396325b975FcAFA8105A89A9E672` | `0x73e78d3a3470396325b975FcAFA8105A89A9E672` |
-| Deployer | — | `0x7C3311F29e318617fed0833E68D6522948AaE995` | `0x7C3311F29e318617fed0833E68D6522948AaE995` |
+| Contract | Address |
+|----------|---------|
+| OlympiaTreasury | `0x60d0A7394f9Cd5C469f9F5Ec4F9C803F5294d79b` |
+| OlympiaGovernor | `0xe763f13cC89292C4F279BEF2aD54F1E89A3a87d3` |
+| OlympiaExecutor | `0x292eBe07d11850Dfc94Cbf9c72C3A054d23cAB54` |
+| TimelockController | `0x3d19fEfB093Abad60421B89CF48f4569aaae39b6` |
+| ECFPRegistry | `0xe2b437284B0fc7A1064Afd1f60686c7cEAa7343a` |
+| SanctionsOracle | `0xAA93C0d1cCf9a0Ec43A2EE8CD1AfFC473b82f36A` |
+| OlympiaMemberNFT | `0xb4D45A498994C89553A9c923c6b85F7623C0843e` |
+| OlympiaMemberRenderer | `0xE29d0f47043F40059AB5DE7C8F7E7B665a7caCCf` |
+| MembershipVerifier | `0xb6274251Fb8F1D865A0B62bba9fF31c1bfEdccE6` |
+| Deployer | `0xAF21767a2c5b3acFFB64dC64CD5A876e91155bD0` |
 
 ### Governance Parameters (Mordor Demo v0.2)
 
@@ -463,9 +465,10 @@ Demo v0.2 contracts. Treasury deployed via CREATE (nonce-based), governance via 
 
 | Branch | Purpose | Treasury | Governance | OZ Version |
 |--------|---------|----------|------------|------------|
-| `demo_v0.1` | Historical snapshot | OZ 5.6 AccessControl, CREATE2 | OZ 5.1.0, CREATE2 | 5.6 (treasury), 5.1 (governance) |
-| `demo_v0.2` | Current demo deployment | Pure Solidity, CREATE | OZ 5.1.0 (Shanghai), CREATE2 | 5.1.0 (governance only) |
 | `main` | Production target | TBD (post-Olympia) | OZ 5.6.0 (Cancun) | 5.6.0 |
+| `demo_v0.3` | Current demo deployment | Pure Solidity, CREATE | OZ 5.1.0 (Shanghai), CREATE2 | 5.1.0 (governance only) |
+| `demo_v0.2` | Preserved — 7 contracts | Pure Solidity, CREATE | OZ 5.1.0 (Shanghai), CREATE2 | 5.1.0 (governance only) |
+| `demo_v0.1` | Historical snapshot | OZ 5.6 AccessControl, CREATE2 | OZ 5.1.0, CREATE2 | 5.6 (treasury), 5.1 (governance) |
 
 ---
 
